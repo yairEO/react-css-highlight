@@ -13,6 +13,28 @@ https://github.com/user-attachments/assets/6dfefafd-869a-4712-8e89-21b78789fdea
 
 ---
 
+## 📦 Installation
+
+Install via [npm](https://www.npmjs.com/package/react-css-highlight):
+
+```bash
+npm install react-css-highlight
+```
+
+Or using `pnpm`:
+
+```bash
+pnpm add react-css-highlight
+```
+
+Or using `yarn`:
+
+```bash
+yarn add react-css-highlight
+```
+
+---
+
 ## ✨ Features
 
 - 🚀 **Blazing Fast** - Uses TreeWalker for efficient DOM traversal (500× faster than naive approaches)
@@ -40,6 +62,7 @@ https://github.com/user-attachments/assets/6dfefafd-869a-4712-8e89-21b78789fdea
 
 ## 📖 Table of Contents
 
+- [Installation](#-installation)
 - [Quick Start](#-quick-start)
 - [Usage Patterns](#-usage-patterns)
   - [Ref-Based (Advanced)](#ref-based-advanced)
@@ -213,13 +236,64 @@ import {
 
 ### Default Styles
 
-The component comes with pre-defined highlight styles:
+The component comes with pre-defined highlight styles that use CSS custom properties:
 
 ```css
 ::highlight(highlight) {
-  background-color: var(--palette-warning-light);
+  background-color: var(--highlight-primary, #fef3c7);
   color: inherit;
 }
+```
+
+### CSS Custom Properties
+
+All highlight colors can be customized using CSS custom properties. Override these variables in your global stylesheet or component styles:
+
+```css
+:root {
+  /* Primary highlight (default) */
+  --highlight-primary: #fef3c7;    /* Light yellow */
+
+  /* Secondary highlight */
+  --highlight-secondary: #cffafe;  /* Sky blue */
+
+  /* Success highlight */
+  --highlight-success: #dcfce7;    /* Light green */
+
+  /* Warning highlight */
+  --highlight-warning: #fde68a;    /* Orange-yellow */
+
+  /* Error highlight */
+  --highlight-error: #ffccbc;      /* Light red */
+
+  /* Active/focused highlight */
+  --highlight-active: #fcd34d;     /* Dark yellow */
+}
+```
+
+**Example:** Customize colors to match your theme:
+
+```css
+:root {
+  --highlight-primary: #e0f2fe;     /* Light blue */
+  --highlight-success: #d1fae5;    /* Mint green */
+  --highlight-error: #fee2e2;       /* Light pink */
+}
+```
+
+### Pre-defined Style Variants
+
+The component includes several pre-defined highlight styles:
+
+```tsx
+// Available variants
+highlightName="highlight"           // Primary (default)
+highlightName="highlight-primary"   // Yellow (#fef3c7)
+highlightName="highlight-secondary" // Sky blue (#cffafe)
+highlightName="highlight-success"   // Light green (#dcfce7)
+highlightName="highlight-warning"   // Orange-yellow (#fde68a)
+highlightName="highlight-error"     // Light red (#ffccbc)
+highlightName="highlight-active"    // Dark yellow (#fcd34d), bold text
 ```
 
 ### Custom Styles
@@ -241,18 +315,6 @@ Create custom highlight styles by providing a `highlightName`:
   text-decoration: underline wavy;
   font-weight: bold;
 }
-```
-
-### Pre-defined Style Variants
-
-```tsx
-// Available variants
-highlightName="highlight-primary"   // Yellow (default)
-highlightName="highlight-secondary" // Sky blue
-highlightName="highlight-success"   // Light green
-highlightName="highlight-warning"   // Orange
-highlightName="highlight-error"     // Red
-highlightName="highlight-active"    // Dark orange, bold
 ```
 
 ---
