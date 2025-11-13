@@ -5,7 +5,7 @@ import HighlightWrapper from "./HighlightWrapper";
 import "./Highlight.css";
 
 const meta: Meta<typeof Highlight> = {
-  title: "components/General/Highlight",
+  title: "Highlight",
   component: Highlight,
   parameters: {
     layout: "centered",
