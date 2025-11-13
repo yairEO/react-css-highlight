@@ -19,17 +19,22 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
+            - name: Set up pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 9
+
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: "20" # Use a current LTS version
-                  cache: "npm"
+                  cache: "pnpm"
 
             - name: Install dependencies
-              run: npm ci # 'ci' is faster and safer for workflows
+              run: pnpm install --frozen-lockfile # '--frozen-lockfile' is faster and safer for workflows
 
             - name: Build Storybook
-              run: npm run build-storybook -o storybook-static
+              run: pnpm run build-storybook -o storybook-static
               # We explicitly set the output directory to 'storybook-static'
 
             - name: Setup GitHub Pages
