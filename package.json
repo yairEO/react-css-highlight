@@ -29,7 +29,13 @@
     "build-storybook": "storybook build"
   },
   "author": "Yair Even-Or <vsync.design@gmail.com>",
-  "main": "src/Highlight.tsxHighlight.tsx",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yairEO/react-css-highlight.git"
