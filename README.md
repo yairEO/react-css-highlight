@@ -1,4 +1,4 @@
-# 🎨 React Text Highlight Component
+# React Text <mark>Highlight</mark> Component
 
 > Modern, zero-dependency component for highlighting text using [CSS Custom Highlight](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::highlight) API
 
