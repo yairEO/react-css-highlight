@@ -1,0 +1,44 @@
+/**
+ * Default highlight styles using CSS Custom Highlight API
+ *
+ * Usage: These styles apply to highlights created by the Highlight component
+ * Customize by providing a custom highlightName prop
+ */
+
+/* Default highlight style */
+::highlight(highlight) {
+  background-color: var(--highlight-primary, #fef3c7);
+  color: inherit;
+}
+
+/* Alternative highlight styles for different use cases */
+::highlight(highlight-primary) {
+  background-color: var(--highlight-primary, #fef3c7);
+  color: inherit;
+}
+
+::highlight(highlight-secondary) {
+  background-color: var(--highlight-secondary, #cffafe);
+  color: inherit;
+}
+
+::highlight(highlight-success) {
+  background-color: var(--highlight-success, #dcfce7);
+  color: inherit;
+}
+
+::highlight(highlight-warning) {
+  background-color: var(--highlight-warning, #fde68a);
+  color: inherit;
+}
+
+::highlight(highlight-error) {
+  background-color: var(--highlight-error, #ffccbc);
+  color: inherit;
+}
+
+/* Active/focused highlight */
+::highlight(highlight-active) {
+  background-color: var(--highlight-active, #fcd34d);
+  color: #000;
+}

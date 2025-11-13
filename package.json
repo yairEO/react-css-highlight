@@ -1,0 +1,54 @@
+{
+  "name": "react-css-highlight",
+  "version": "1.0.0",
+  "homepage": "https://github.com/yairEO/react-css-highlight",
+  "description": "A powerful, zero-dependency React component for highlighting text using the modern CSS Custom Highlight API with TreeWalker for blazing-fast DOM traversal",
+  "keywords": [
+    "react",
+    "css",
+    "highlight",
+    "text",
+    "component"
+  ],
+  "license": "MIT",
+  "browserslist": [
+    ">1%",
+    "not dead",
+    "not ie < 11",
+    "not IE_Mob 11",
+    "not op_mini all"
+  ],
+  "np": {
+    "yarn": false,
+    "yolo": true
+  },
+  "scripts": {
+    "version": "git add .",
+    "prepublishOnly": "pkg-ok",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "author": "Yair Even-Or <vsync.design@gmail.com>",
+  "main": "src/Highlight.tsxHighlight.tsx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yairEO/react-css-highlight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yaireo/react-css-highlight/issues"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "typescript": "^5"
+  },
+  "devDependencies": {
+    "@storybook/react": "^10.0.7",
+    "@storybook/react-vite": "^10.0.7",
+    "@types/react": "^19.2.4",
+    "prop-types": "^15.8.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "storybook": "^10.0.7",
+    "np": "^10.2.0"
+  }
+}

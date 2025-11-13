@@ -1,0 +1,45 @@
+name: Deploy Storybook to GitHub Pages
+
+# Run workflow on pushes to the 'master' branch
+on:
+    push:
+        branches: [master] # Or 'master' or your default branch
+
+# Allow this job to clone the repo and create a page deployment
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20" # Use a current LTS version
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci # 'ci' is faster and safer for workflows
+
+            - name: Build Storybook
+              run: npm run build-storybook -o storybook-static
+              # We explicitly set the output directory to 'storybook-static'
+
+            - name: Setup GitHub Pages
+              uses: actions/configure-pages@v4
+
+            - name: Upload Storybook artifact
+              uses: actions/upload-pages-artifact@v4
+              with:
+                  path: ./storybook-static # Path to the built Storybook
+
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4

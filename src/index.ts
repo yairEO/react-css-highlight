@@ -1,0 +1,20 @@
+// Main component with ref-based API (default export for power users)
+export { default } from "./Highlight";
+// Export constants
+export {
+  DEFAULT_DEBOUNCE_MS,
+  DEFAULT_MAX_HIGHLIGHTS,
+  IGNORED_TAG_NAMES,
+  SLOW_SEARCH_THRESHOLD_MS,
+} from "./Highlight.constants";
+// Export types
+export type {
+  HighlightMatch,
+  HighlightProps,
+  HighlightWrapperProps,
+  UseHighlightResult,
+} from "./Highlight.types";
+// Convenience wrapper component (named export for simple cases)
+export { default as HighlightWrapper } from "./HighlightWrapper";
+// Export utility hooks
+export { useDebounce } from "./useDebounce";

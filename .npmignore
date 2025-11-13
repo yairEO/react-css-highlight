@@ -1,0 +1,14 @@
+# Exclude Storybook config
+.storybook
+
+# Exclude all story files (adjust pattern if needed)
+src/**/*.stories.js
+src/**/*.stories.jsx
+src/**/*.stories.ts
+src/**/*.stories.tsx
+
+# Exclude the static Storybook build output
+storybook-static
+
+# Exclude GitHub Actions workflows
+.github
