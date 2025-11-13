@@ -787,33 +787,6 @@ const ref = useRef<HTMLDivElement>(null);
 └─────────────────────────────────────────────────────┘
 ```
 
-### Key Technologies
-
-1. **CSS Custom Highlight API** - Modern browser API for styling arbitrary text ranges
-2. **TreeWalker** - Efficient DOM traversal (faster than recursive node walking)
-3. **Range API** - Precise text selection without DOM mutation
-4. **requestIdleCallback** - Non-blocking execution during browser idle time
-5. **React 19 useEffectEvent** - Stable callbacks without re-renders
-
----
-
-## 📦 File Structure
-
-```
-Highlight/
-├── Highlight.tsx              # Main component (ref-based)
-├── HighlightWrapper.tsx       # Convenience wrapper component
-├── Highlight.hooks.ts         # useHighlight custom hook
-├── Highlight.utils.ts         # TreeWalker, regex, Range utilities
-├── Highlight.types.ts         # TypeScript interfaces
-├── Highlight.constants.ts     # Configuration constants
-├── Highlight.css              # Default highlight styles
-├── Highlight.stories.tsx      # Storybook examples
-├── index.ts                   # Public API exports
-└── README.md                  # This file
-```
-
----
 
 ## 🔗 Related Resources
 
