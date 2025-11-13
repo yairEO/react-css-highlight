@@ -11,6 +11,10 @@ permissions:
     pages: write
     id-token: write
 
+concurrency:
+    group: "pages"
+    cancel-in-progress: false
+
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
@@ -34,8 +38,7 @@ jobs:
               run: pnpm install --frozen-lockfile # '--frozen-lockfile' is faster and safer for workflows
 
             - name: Build Storybook
-              run: pnpm run build-storybook -o storybook-static
-              # We explicitly set the output directory to 'storybook-static'
+              run: pnpm run build-storybook
 
             - name: Setup GitHub Pages
               uses: actions/configure-pages@v4

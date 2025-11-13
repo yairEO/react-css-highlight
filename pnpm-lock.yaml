@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
     devDependencies:
       '@storybook/react':
         specifier: ^10.0.7
@@ -32,9 +36,6 @@ importers:
       storybook:
         specifier: ^10.0.7
         version: 10.0.7(@testing-library/dom@10.4.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.2.2)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
 
 packages:
 
