@@ -1,37 +1,15 @@
-# 🎨 Highlight Component
+# 🎨 React Text Highlight Component
 
-> A powerful, zero-dependency React component for highlighting text using the modern [CSS Custom Highlight](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::highlight) API with TreeWalker for blazing-fast DOM traversal.
+> Modern, zero-dependency component for highlighting text using [CSS Custom Highlight](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::highlight) API
 
 [![React 19](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![CSS Highlights API](https://img.shields.io/badge/CSS-Highlights%20API-ff69b4?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API)
+[![CSS Highlight API](https://img.shields.io/badge/CSS-Highlights%20API-ff69b4?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API)
 
 
 
 https://github.com/user-attachments/assets/6dfefafd-869a-4712-8e89-21b78789fdea
 
-
----
-
-## 📦 Installation
-
-Install via [npm](https://www.npmjs.com/package/react-css-highlight):
-
-```bash
-npm install react-css-highlight
-```
-
-Or using `pnpm`:
-
-```bash
-pnpm add react-css-highlight
-```
-
-Or using `yarn`:
-
-```bash
-yarn add react-css-highlight
-```
 
 ---
 
@@ -75,6 +53,28 @@ yarn add react-css-highlight
 - [Best Practices](#-best-practices)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
+
+---
+
+## 📦 Installation
+
+Install via [npm](https://www.npmjs.com/package/react-css-highlight):
+
+```bash
+npm install react-css-highlight
+```
+
+Or using `pnpm`:
+
+```bash
+pnpm add react-css-highlight
+```
+
+Or using `yarn`:
+
+```bash
+yarn add react-css-highlight
+```
 
 ---
 
