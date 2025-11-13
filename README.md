@@ -15,14 +15,12 @@ https://github.com/user-attachments/assets/6dfefafd-869a-4712-8e89-21b78789fdea
 
 ## ✨ Features
 
-- 🚀 **Blazing Fast** - Uses TreeWalker for efficient DOM traversal (500× faster than naive approaches)
-- 🎯 **Non-Invasive** - Zero impact on your DOM structure or React component tree
-- 🎨 **Fully Customizable** - Style highlights with simple CSS
+- 🚀 **Blazing Fast** - Uses `TreeWalker` for efficient DOM traversal (500× faster than naive approaches)
+- 🎯 **Non-Invasive** - Zero impact on your DOM structure or React component tree. The DOM is not mutated.
+- 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
 - 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
 - 📦 **Zero Dependencies** - Pure React + Modern Browser APIs
 - 🧩 **Two Usage Patterns** - Ref-based (power users) or wrapper (convenience)
-- ♿ **Production Ready** - Comprehensive error handling, edge case coverage, and performance monitoring
-- 🎭 **Portal-Friendly** - Works with React portals and complex layouts
 - 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
 
 ---
