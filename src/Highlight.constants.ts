@@ -10,11 +10,16 @@ export const DEFAULT_DEBOUNCE_MS = 100;
 
 /** HTML elements whose text content should not be highlighted */
 export const IGNORED_TAG_NAMES = [
-  "SCRIPT",
-  "STYLE",
-  "NOSCRIPT",
-  "IFRAME",
-  "TEXTAREA",
+    "SCRIPT",
+    "STYLE",
+    "NOSCRIPT",
+    "IFRAME",
+    "TEXTAREA",
+    "OBJECT",    // embedded objects/plugins
+    "EMBED",     // embedded content
+    "SVG",       // SVG text has different semantics
+    "CANVAS",    // no text content
+    "SELECT",    // dropdown options handled separately
 ] as const;
 
 /** Performance threshold in milliseconds - warn if search takes longer */
