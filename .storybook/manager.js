@@ -24,5 +24,9 @@ addons.setConfig({
       },
     },
   }),
+  sidebar: {
+    showRoots: true,
+    collapsedRoots: [],
+  },
 });
 

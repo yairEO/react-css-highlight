@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import Highlight from "./Highlight";
-import HighlightWrapper from "./HighlightWrapper";
-import "./Highlight.css";
+import Highlight from "../src/Highlight";
+import HighlightWrapper from "../src/HighlightWrapper";
+import "../src/Highlight.css";
 
 const meta: Meta<typeof Highlight> = {
     title: "Highlight",

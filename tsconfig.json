@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true
   },
-  "include": ["src"],
+  "include": ["src", "stories/**/*.tsx"],
   "exclude": ["node_modules"]
 }
 
