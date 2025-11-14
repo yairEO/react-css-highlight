@@ -5,23 +5,24 @@ import HighlightWrapper from "./HighlightWrapper";
 import "./Highlight.css";
 
 const meta: Meta<typeof Highlight> = {
-  title: "Highlight",
-  component: Highlight,
-  parameters: {
-    layout: "centered",
-    docs: {
-      description: {
-        component:
-          "Highlights search terms in text using the CSS Custom Highlight API. " +
-          "This component uses TreeWalker for efficient DOM traversal and supports " +
-          "multiple search terms, case sensitivity, and whole word matching.\n\n" +
-          "**Two Usage Patterns:**\n" +
-          "- `Highlight` (default) - Ref-based API for power users and complex scenarios\n" +
-          "- `HighlightWrapper` - Convenience wrapper for simple use cases",
-      },
+    title: "Highlight",
+    component: Highlight,
+    parameters: {
+        layout: "centered",
+        docs: {
+            codePanel: true,
+            description: {
+                component:
+                    "Highlights search terms in text using the CSS Custom Highlight API. " +
+                    "This component uses TreeWalker for efficient DOM traversal and supports " +
+                    "multiple search terms, case sensitivity, and whole word matching.\n\n" +
+                    "**Two Usage Patterns:**\n" +
+                    "- `Highlight` (default) - Ref-based API for power users and complex scenarios\n" +
+                    "- `HighlightWrapper` - Convenience wrapper for simple use cases",
+            },
+        },
     },
-  },
-  tags: ["autodocs"],
+    tags: ["autodocs"],
 };
 
 export default meta;

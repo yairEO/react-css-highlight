@@ -15,7 +15,7 @@ https://github.com/user-attachments/assets/6dfefafd-869a-4712-8e89-21b78789fdea
 
 ## ✨ Features
 
-- 🚀 **Blazing Fast** - Uses `TreeWalker` for efficient DOM traversal (500× faster than naive approaches)
+- 🚀 **Blazing Fast** - No DOM mutiations! Uses `TreeWalker` for efficient DOM traversal (500× faster than naive approaches)
 - 🎯 **Non-Invasive** - Zero impact on your DOM structure or React component tree. The DOM is not mutated.
 - 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
 - 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
