@@ -3,6 +3,17 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Highlight from "../src/Highlight";
 import HighlightWrapper from "../src/HighlightWrapper";
 import "../src/Highlight.css";
+import {
+  AboutHighlightComponentContent,
+  SystemLogContent,
+  DataProcessingContent,
+  WholeWordExampleContent,
+  CustomStylingContent,
+  SystemStatusContent,
+  WrapperExampleContent,
+  SimpleExampleContent,
+  MultipleHighlightsContent,
+} from "./content";
 
 const meta: Meta<typeof Highlight> = {
     title: "Highlight",
@@ -39,21 +50,7 @@ export const SingleTerm: Story = {
       <div style={{ maxWidth: 600 }}>
         <Highlight search="Highlight" targetRef={contentRef} />
         <div ref={contentRef}>
-          <h2>About the Highlight Component</h2>
-          <p>
-            Highlight is a powerful, zero-dependency React component for highlighting
-            text using the modern CSS Custom Highlight API. It uses TreeWalker for
-            blazing-fast DOM traversal, making it 500× faster than naive approaches.
-            The component is non-invasive and has zero impact on your DOM structure
-            or React component tree.
-          </p>
-          <p>
-            The Highlight component supports multiple search terms, case sensitivity,
-            whole word matching, and fully customizable CSS styling. It offers two
-            usage patterns: a ref-based API for power users and complex scenarios, and
-            a wrapper component for simple use cases. The component works seamlessly
-            with React portals and complex layouts.
-          </p>
+          {AboutHighlightComponentContent}
         </div>
       </div>
     );
@@ -71,27 +68,7 @@ export const MultipleTerms: Story = {
       <div style={{ maxWidth: 600 }}>
         <Highlight search={["error", "warning", "success"]} targetRef={contentRef} />
         <div ref={contentRef}>
-          <h2>Log Messages</h2>
-          <p>
-            [2024-01-15 10:23:45] success: Application started successfully on port
-            3000
-          </p>
-          <p>
-            [2024-01-15 10:24:12] warning: Deprecated API usage detected in module
-            UserService
-          </p>
-          <p>
-            [2024-01-15 10:24:30] error: Failed to connect to database - Connection
-            timeout
-          </p>
-          <p>
-            [2024-01-15 10:24:45] success: Retry successful, database connection
-            established
-          </p>
-          <p>
-            [2024-01-15 10:25:00] warning: High memory usage detected (85% of
-            available RAM)
-          </p>
+          {SystemLogContent}
         </div>
       </div>
     );
@@ -176,17 +153,7 @@ export const InteractiveSearch: Story = {
         />
 
         <div ref={contentRef}>
-          <h2>Data Processing</h2>
-          <p>
-            Data analysis involves collecting, processing, and analyzing DATA to
-            extract meaningful insights. Raw data must be cleaned and transformed
-            before analysis. The data pipeline ensures data quality and consistency.
-          </p>
-          <p>
-            Big Data technologies handle massive datasets that traditional data
-            processing software cannot manage. Data scientists use statistical
-            methods to analyze data patterns and trends.
-          </p>
+          {DataProcessingContent}
         </div>
       </div>
     );
@@ -217,16 +184,7 @@ export const WholeWordMatch: Story = {
         <Highlight search="cat" targetRef={contentRef} wholeWord={wholeWord} />
 
         <div ref={contentRef}>
-          <p>
-            The cat sat on the mat. The catalog contains many categories of
-            concatenated strings. Scattered throughout, you'll find cats and their
-            catastrophic adventures.
-          </p>
-          <p>
-            Without whole word matching: highlights "cat" in catalog, categories,
-            concatenated, scattered, cats, catastrophic
-          </p>
-          <p>With whole word matching: only highlights the standalone word "cat"</p>
+          {WholeWordExampleContent}
         </div>
       </div>
     );
@@ -259,12 +217,7 @@ export const CustomStyle: Story = {
         />
 
         <div ref={contentRef}>
-          <h2>Custom Styling</h2>
-          <p>
-            This is an important message with important information. It's important
-            to note that custom CSS can be applied to highlights using the
-            highlightName prop.
-          </p>
+          {CustomStylingContent}
         </div>
       </div>
     );
@@ -299,12 +252,7 @@ export const MultipleHighlights: Story = {
         />
 
         <div ref={contentRef}>
-          <h2>System Status</h2>
-          <p>success: All systems operational</p>
-          <p>warning: High CPU usage detected</p>
-          <p>error: Database connection failed</p>
-          <p>success: Automatic recovery completed</p>
-          <p>warning: Cache memory nearly full</p>
+          {SystemStatusContent}
         </div>
       </div>
     );
@@ -370,16 +318,7 @@ export const WrapperPattern: Story = {
         </p>
         <HighlightWrapper search="important">
           <div style={{ padding: 16, border: "1px solid #ddd", borderRadius: 4 }}>
-            <h4>Simple Wrapper Usage</h4>
-            <p>
-              This is an important message about important topics. The wrapper
-              pattern is important for simple use cases where you don't need multiple
-              highlights or advanced features.
-            </p>
-            <p>
-              Notice how you don't need to manage refs manually - the wrapper handles
-              it for you! This is important for developer experience.
-            </p>
+            {WrapperExampleContent}
           </div>
         </HighlightWrapper>
       </div>
@@ -409,13 +348,10 @@ export const WhenToUseWhich: Story = {
           <div style={{ marginTop: 16 }}>
             <HighlightWrapper search="simple">
               <div
-                style={{ padding: 12, backgroundColor: "#f5f5f5", borderRadius: 4 }}
-              >
-                <p>
-                  This is a simple example with simple highlighting. Perfect for
-                  simple use cases!
-                </p>
-              </div>
+              style={{ padding: 12, backgroundColor: "#f5f5f5", borderRadius: 4 }}
+            >
+              {SimpleExampleContent}
+            </div>
             </HighlightWrapper>
           </div>
         </section>
@@ -443,13 +379,10 @@ export const WhenToUseWhich: Story = {
 
             <div
               ref={sharedContentRef}
-              style={{ padding: 12, backgroundColor: "#f5f5f5", borderRadius: 4 }}
-            >
-              <p>
-                You can have multiple highlights on the same content! This shows both
-                "multiple" and "highlights" with different styles.
-              </p>
-            </div>
+            style={{ padding: 12, backgroundColor: "#f5f5f5", borderRadius: 4 }}
+          >
+            {MultipleHighlightsContent}
+          </div>
           </div>
         </section>
       </div>
