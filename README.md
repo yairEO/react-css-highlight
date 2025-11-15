@@ -205,9 +205,16 @@ When these requirements aren't met, use the [Component (Ref-Based)](#1-component
 
 The `useHighlight` hook provides the same functionality as the `Highlight` component, but gives you direct access to the highlight state.
 
+> **⚠️ Important:** When using the hook directly, you must import the CSS file somewhere in your project (typically in your main entry file or root component):
+> ```tsx
+> import "react-css-highlight/dist/Highlight.css";
+> ```
+> This only needs to be imported **once** per project, not in every file that uses the hook.
+
 ```tsx
 import { useRef } from "react";
 import { useHighlight } from "react-css-highlight";
+// Note: CSS should be imported once in your app's entry point, not here
 
 function CustomHighlightComponent() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -277,12 +284,20 @@ function CustomHighlightComponent() {
 
 The `useHighlight` hook accepts the same options as the `Highlight` component and returns highlight state.
 
+> **Note:** When using the hook directly, you must import the CSS file once in your project:
+> ```tsx
+> // In your main.tsx, App.tsx, or _app.tsx
+> import "react-css-highlight/dist/Highlight.css";
+> ```
+> This is not needed when using the `Highlight` or `HighlightWrapper` components, as they import it automatically.
+
 **Parameters:** Same as [`Highlight` Component Props](#highlight-component-props)
 
 **Returns:** [`UseHighlightResult`](#usehighlightresult-type)
 
 ```tsx
 import { useHighlight } from "react-css-highlight";
+// CSS already imported in main entry file
 
 const { matchCount, isSupported, error } = useHighlight({
   search: "term",
@@ -592,6 +607,9 @@ When testing your implementation:
 ### Using the Hook with Custom UI
 
 ```tsx
+// Note: Import CSS once in your app entry point (main.tsx, App.tsx, or _app.tsx):
+// import "react-css-highlight/dist/Highlight.css";
+
 import { useState, useRef } from "react";
 import { useHighlight } from "react-css-highlight";
 
