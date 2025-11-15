@@ -42,8 +42,9 @@ https://github.com/user-attachments/assets/6dfefafd-869a-4712-8e89-21b78789fdea
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
 - [Usage Patterns](#-usage-patterns)
-  - [Ref-Based (Advanced)](#ref-based-advanced)
-  - [Wrapper (Simple)](#wrapper-simple)
+  - [Component (Ref-Based)](#1-component-ref-based)
+  - [Wrapper (Simple)](#2-wrapper-simple)
+  - [Hook (Maximum Control)](#3-hook-maximum-control)
 - [API Reference](#-api-reference)
 - [Styling](#-styling)
 - [Performance](#-performance)
@@ -106,7 +107,9 @@ function SearchResults() {
 
 ## 📚 Usage Patterns
 
-### Ref-Based (Advanced)
+There are three ways to use this library, each suited for different scenarios:
+
+### 1. Component (Ref-Based)
 
 **Use when:**
 - Multiple highlights on the same content
@@ -116,7 +119,7 @@ function SearchResults() {
 
 ```tsx
 import { useRef } from "react";
-import Highlight from "@/components/general/Highlight";
+import Highlight from "react-css-highlight";
 
 function AdvancedSearch() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -144,7 +147,7 @@ function AdvancedSearch() {
 }
 ```
 
-### Wrapper (Simple)
+### 2. Wrapper (Simple)
 
 **Use when:**
 - Simple, single highlight needed
@@ -190,11 +193,117 @@ const MyComponent = forwardRef((props, ref) => <div ref={ref} {...props} />);
 </HighlightWrapper>
 ```
 
-When these requirements aren't met, use the [Ref-Based (Advanced)](#ref-based-advanced) pattern instead.
+When these requirements aren't met, use the [Component (Ref-Based)](#1-component-ref-based) pattern instead.
+
+### 3. Hook (Maximum Control)
+
+**Use when:**
+- Building custom components or abstractions
+- Need direct access to match count, error state, or browser support
+- Want to control the entire render logic
+- Integrating with complex state management
+
+The `useHighlight` hook provides the same functionality as the `Highlight` component, but gives you direct access to the highlight state.
+
+```tsx
+import { useRef } from "react";
+import { useHighlight } from "react-css-highlight";
+
+function CustomHighlightComponent() {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const { matchCount, isSupported, error } = useHighlight({
+    search: "React",
+    targetRef: contentRef,
+    highlightName: "highlight",
+    caseSensitive: false,
+    wholeWord: false,
+    maxHighlights: 1000,
+    debounce: 100,
+    onHighlightChange: (count) => console.log(`Found ${count} matches`),
+    onError: (err) => console.error("Highlight error:", err),
+  });
+
+  return (
+    <div>
+      {!isSupported && (
+        <div className="warning">
+          Your browser doesn't support CSS Custom Highlight API
+        </div>
+      )}
+
+      {error && (
+        <div className="error">
+          Error: {error.message}
+        </div>
+      )}
+
+      <div className="match-count">
+        Found {matchCount} matches
+      </div>
+
+      <div ref={contentRef}>
+        <p>React is a JavaScript library for building user interfaces.</p>
+        <p>React makes it painless to create interactive UIs.</p>
+      </div>
+    </div>
+  );
+}
+```
+
+**Hook Return Value:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `matchCount` | `number` | Number of highlighted matches found |
+| `isSupported` | `boolean` | Whether the browser supports CSS Custom Highlight API |
+| `error` | `Error \| null` | Error object if highlighting failed, null otherwise |
+
+**When to use the hook vs component:**
+
+- **Use the component** when you just need highlighting without additional UI logic
+- **Use the hook** when you need to:
+  - Display match counts in your UI
+  - Show error messages to users
+  - Conditionally render UI based on browser support
+  - Build complex components that need highlight state
+  - Integrate with form state or other React state management
 
 ---
 
 ## 📋 API Reference
+
+### `useHighlight` Hook
+
+The `useHighlight` hook accepts the same options as the `Highlight` component and returns highlight state.
+
+**Parameters:** Same as [`Highlight` Component Props](#highlight-component-props)
+
+**Returns:** [`UseHighlightResult`](#usehighlightresult-type)
+
+```tsx
+import { useHighlight } from "react-css-highlight";
+
+const { matchCount, isSupported, error } = useHighlight({
+  search: "term",
+  targetRef: contentRef,
+  highlightName: "highlight",
+  caseSensitive: false,
+  wholeWord: false,
+  maxHighlights: 1000,
+  debounce: 100,
+  onHighlightChange: (count) => {},
+  onError: (err) => {},
+});
+```
+
+#### `UseHighlightResult` Type
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `matchCount` | `number` | Number of matches currently highlighted |
+| `isSupported` | `boolean` | Whether browser supports CSS Custom Highlight API |
+| `error` | `Error \| null` | Error object if highlighting failed, null otherwise |
 
 ### `Highlight` Component Props
 
@@ -226,7 +335,16 @@ import {
   DEFAULT_MAX_HIGHLIGHTS,  // 1000
   IGNORED_TAG_NAMES,       // ["SCRIPT", "STYLE", "NOSCRIPT", "IFRAME", "TEXTAREA"]
   SLOW_SEARCH_THRESHOLD_MS // 100
-} from "@/components/general/Highlight";
+} from "react-css-highlight";
+```
+
+### Exported Hooks
+
+```tsx
+import {
+  useHighlight,  // Main highlight hook
+  useDebounce    // Utility debounce hook
+} from "react-css-highlight";
 ```
 
 ---
@@ -470,6 +588,61 @@ When testing your implementation:
 ---
 
 ## 💡 Advanced Examples
+
+### Using the Hook with Custom UI
+
+```tsx
+import { useState, useRef } from "react";
+import { useHighlight } from "react-css-highlight";
+
+function SearchWithStats() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const { matchCount, isSupported, error } = useHighlight({
+    search: searchTerm,
+    targetRef: contentRef,
+    debounce: 300,
+  });
+
+  if (!isSupported) {
+    return (
+      <div className="alert">
+        Your browser doesn't support text highlighting.
+        Please upgrade to a modern browser.
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="search-header">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search..."
+          className="search-input"
+        />
+
+        <div className="search-stats">
+          {error ? (
+            <span className="error">Error: {error.message}</span>
+          ) : (
+            <span className="match-count">
+              {searchTerm && `${matchCount} ${matchCount === 1 ? 'match' : 'matches'}`}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div ref={contentRef} className="content">
+        {/* Your content here */}
+      </div>
+    </div>
+  );
+}
+```
 
 ### Interactive Search with Debouncing
 

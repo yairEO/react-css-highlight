@@ -16,5 +16,6 @@ export type {
 } from "./Highlight.types";
 // Convenience wrapper component (named export for simple cases)
 export { default as HighlightWrapper } from "./HighlightWrapper";
-// Export utility hooks
+// Export hooks for advanced usage
 export { useDebounce } from "./useDebounce";
+export { useHighlight } from "./Highlight.hooks";

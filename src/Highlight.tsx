@@ -2,6 +2,9 @@ import { useHighlight } from "./Highlight.hooks";
 import type { HighlightProps } from "./Highlight.types";
 import "./Highlight.css";
 
+// Re-export the hook for direct usage
+export { useHighlight } from "./Highlight.hooks";
+
 /**
  * Highlight component using CSS Custom Highlight API
  *
