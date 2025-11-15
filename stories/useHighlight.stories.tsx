@@ -60,7 +60,7 @@ type Story = StoryObj<typeof useHighlight>;
  */
 export const InteractiveSearch: Story = {
   render: () => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState("react");
     const [caseSensitive, setCaseSensitive] = useState(false);
     const [wholeWord, setWholeWord] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
