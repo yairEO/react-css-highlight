@@ -7,9 +7,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![CSS Highlight API](https://img.shields.io/badge/CSS-Highlights%20API-ff69b4?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API)
 
-<img src="https://github.com/user-attachments/assets/31528d30-9e6d-4f9b-9c00-0ab52f8e0d50" />
+<img src="https://github.com/user-attachments/assets/ac19c4cb-ae11-4090-ba65-0300f67f198f" />
 
----
 
 ## ✨ Features
 
