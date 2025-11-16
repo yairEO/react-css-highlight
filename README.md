@@ -20,18 +20,6 @@
 - 🧩 **Two Usage Patterns** - Ref-based (power users) or wrapper (convenience)
 - 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
 
----
-
-## 🎯 Use Cases
-
-- 🔍 **Search Results** - Highlight search terms in documentation, articles, or search results
-- 📝 **Code Editors** - Syntax highlighting and search in code blocks
-- 📊 **Data Tables** - Highlight matching values in large datasets
-- 🎓 **Learning Tools** - Emphasize key terms in educational content
-- 🔐 **Security Audit** - Highlight sensitive data patterns in logs
-- 📧 **Email Clients** - Highlight mentions, keywords, or search matches
-
----
 
 ## 📖 Table of Contents
 
@@ -49,8 +37,6 @@
 - [Best Practices](#-best-practices)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
-
----
 
 ## 📦 Installation
 
@@ -71,8 +57,6 @@ Or using `yarn`:
 ```bash
 yarn add react-css-highlight
 ```
-
----
 
 ## 🚀 Quick Start
 
@@ -98,8 +82,6 @@ function SearchResults() {
 ```
 
 **Result:** All instances of "React" will be highlighted with a yellow background.
-
----
 
 ## 📚 Usage Patterns
 
@@ -272,7 +254,6 @@ function CustomHighlightComponent() {
   - Build complex components that need highlight state
   - Integrate with form state or other React state management
 
----
 
 ## 📋 API Reference
 
@@ -357,8 +338,6 @@ import {
   useDebounce    // Utility debounce hook
 } from "react-css-highlight";
 ```
-
----
 
 ## 🎨 Styling
 
@@ -445,8 +424,6 @@ Create custom highlight styles by providing a `highlightName`:
 }
 ```
 
----
-
 ## ⚡ Performance
 
 ### Optimizations
@@ -477,19 +454,6 @@ Create custom highlight styles by providing a `highlightName`:
   maxHighlights={5000} // Consider lowering
 />
 ```
-
-### Benchmarks
-
-| Content Size | Search Terms | Time | Highlights |
-|--------------|--------------|------|------------|
-| 1,000 nodes  | 1 term       | ~5ms | ~50 |
-| 1,000 nodes  | 5 terms      | ~15ms | ~250 |
-| 10,000 nodes | 1 term       | ~40ms | ~500 |
-| 10,000 nodes | 10 terms     | ~120ms | 1000 (max) |
-
-*Tested on MacBook Pro M1, Chrome 120*
-
----
 
 ## 🌐 Browser Support
 
@@ -595,8 +559,6 @@ When testing your implementation:
 - [ ] **Firefox 140+** - Avoid `text-decoration` and `text-shadow`
 - [ ] **Mobile Safari** - Test touch interactions with highlights
 - [ ] **Chrome Android** - Verify performance on mobile devices
-
----
 
 ## 💡 Advanced Examples
 
@@ -849,8 +811,6 @@ function RobustSearch() {
 }
 ```
 
----
-
 ## 🎯 Best Practices
 
 ### ✅ Do's
@@ -912,8 +872,6 @@ const debouncedSearch = useDebounce(search, 300);
   </HighlightWrapper>
 </HighlightWrapper>
 ```
-
----
 
 ## 🐛 Troubleshooting
 
@@ -997,8 +955,6 @@ const ref = useRef<HTMLDivElement>();
 const ref = useRef<HTMLDivElement>(null);
 ```
 
----
-
 ## 🎓 How It Works
 
 ### Architecture Overview
@@ -1047,5 +1003,4 @@ const ref = useRef<HTMLDivElement>(null);
 - [TreeWalker API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker)
 - [Range API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Range)
 - [Browser Compatibility](https://caniuse.com/mdn-api_highlight)
-- [React 19 useEffectEvent](https://react.dev/reference/react/experimental_useEffectEvent)
 
