@@ -250,35 +250,6 @@ export const SystemStatusContent = (
   </>
 );
 
-export const WrapperExampleContent = (
-  <>
-    <h4>Simple Wrapper Usage</h4>
-    <p>
-      This is an important message about important topics. The wrapper
-      pattern is important for simple use cases where you don't need multiple
-      highlights or advanced features.
-    </p>
-    <p>
-      Notice how you don't need to manage refs manually - the wrapper handles
-      it for you! This is important for developer experience.
-    </p>
-  </>
-);
-
-export const SimpleExampleContent = (
-  <p>
-    This is a simple example with simple highlighting. Perfect for
-    simple use cases!
-  </p>
-);
-
-export const MultipleHighlightsContent = (
-  <p>
-    You can have multiple highlights on the same content! This shows both
-    "multiple" and "highlights" with different styles.
-  </p>
-);
-
 export const AboutHighlightWrapperContent = (
   <>
     <h2>About the HighlightWrapper</h2>

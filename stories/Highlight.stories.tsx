@@ -1,18 +1,14 @@
 import { useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import Highlight from "../src/Highlight";
-import HighlightWrapper from "../src/HighlightWrapper";
+import Highlight from "../src";
 import "../src/Highlight.css";
 import {
   AboutHighlightComponentContent,
   CustomStylingContent,
   DataProcessingContent,
-  MultipleHighlightsContent,
-  SimpleExampleContent,
   SystemLogContent,
   SystemStatusContent,
   WholeWordExampleContent,
-  WrapperExampleContent,
 } from "./content";
 
 const meta: Meta<typeof Highlight> = {
@@ -26,10 +22,7 @@ const meta: Meta<typeof Highlight> = {
                 component:
                     "Highlights search terms in text using the CSS Custom Highlight API. " +
                     "This component uses TreeWalker for efficient DOM traversal and supports " +
-                    "multiple search terms, case sensitivity, and whole word matching.\n\n" +
-                    "**Two Usage Patterns:**\n" +
-                    "- `Highlight` (default) - Ref-based API for power users and complex scenarios\n" +
-                    "- `HighlightWrapper` - Convenience wrapper for simple use cases",
+                    "multiple search terms, case sensitivity, and whole word matching.",
             },
         },
     },
@@ -302,90 +295,3 @@ export const LargeContent: Story = {
   },
 };
 
-/**
- * Convenience wrapper pattern for simple use cases
- * Uses HighlightWrapper which manages the ref internally and injects it into the child.
- * No extra DOM wrapper elements are created!
- */
-export const WrapperPattern: Story = {
-  render: () => {
-    return (
-      <div style={{ maxWidth: 600 }}>
-        <h3 style={{ marginBottom: 16 }}>Using HighlightWrapper (Simpler API)</h3>
-        <p style={{ fontSize: 14, color: "#666", marginBottom: 16 }}>
-          HighlightWrapper injects a ref into your child element - no wrapper divs
-          needed!
-        </p>
-        <HighlightWrapper search="important">
-          <div style={{ padding: 16, border: "1px solid #ddd", borderRadius: 4 }}>
-            {WrapperExampleContent}
-          </div>
-        </HighlightWrapper>
-      </div>
-    );
-  },
-};
-
-/**
- * Comparison showing when to use each pattern
- */
-export const WhenToUseWhich: Story = {
-  render: () => {
-    const sharedContentRef = useRef<HTMLDivElement>(null);
-
-    return (
-      <div style={{ maxWidth: 800 }}>
-        <h2>When to Use Which Pattern?</h2>
-
-        <section style={{ marginTop: 24 }}>
-          <h3>✅ Use HighlightWrapper when:</h3>
-          <ul>
-            <li>Simple, single highlight needed</li>
-            <li>Content is self-contained</li>
-            <li>You want cleaner, simpler code</li>
-          </ul>
-
-          <div style={{ marginTop: 16 }}>
-            <HighlightWrapper search="simple">
-              <div
-              style={{ padding: 12, backgroundColor: "#f5f5f5", borderRadius: 4 }}
-            >
-              {SimpleExampleContent}
-            </div>
-            </HighlightWrapper>
-          </div>
-        </section>
-
-        <section style={{ marginTop: 32 }}>
-          <h3>✅ Use Highlight (ref-based) when:</h3>
-          <ul>
-            <li>Multiple highlights on same content</li>
-            <li>Content in portals or complex layouts</li>
-            <li>Need to highlight existing components</li>
-            <li>Want zero performance overhead</li>
-          </ul>
-
-          <div style={{ marginTop: 16 }}>
-            <Highlight
-              search="multiple"
-              targetRef={sharedContentRef}
-              highlightName="highlight-primary"
-            />
-            <Highlight
-              search="highlights"
-              targetRef={sharedContentRef}
-              highlightName="highlight-secondary"
-            />
-
-            <div
-              ref={sharedContentRef}
-            style={{ padding: 12, backgroundColor: "#f5f5f5", borderRadius: 4 }}
-          >
-            {MultipleHighlightsContent}
-          </div>
-          </div>
-        </section>
-      </div>
-    );
-  },
-};

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import HighlightWrapper from "../src/HighlightWrapper";
+import {HighlightWrapper} from "../src";
 import "../src/Highlight.css";
 import { AboutHighlightWrapperContent } from "./content";
 
