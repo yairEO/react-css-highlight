@@ -295,3 +295,153 @@ export const LargeContent: Story = {
   },
 };
 
+/**
+ * Multiple independent Highlight instances working together
+ * Demonstrates automatic range merging - all instances use default highlightName="highlight"
+ */
+export const MultipleInstances: Story = {
+  render: () => {
+    const contentRef1 = useRef<HTMLDivElement>(null);
+    const contentRef2 = useRef<HTMLDivElement>(null);
+    const contentRef3 = useRef<HTMLDivElement>(null);
+    const [matchCount1, setMatchCount1] = useState(0);
+    const [matchCount2, setMatchCount2] = useState(0);
+    const [matchCount3, setMatchCount3] = useState(0);
+
+    return (
+      <div style={{ maxWidth: 800 }}>
+        <div style={{
+          marginBottom: 20,
+          padding: 16,
+          background: "#e0f2fe",
+          borderRadius: 8,
+          borderLeft: "4px solid #0284c7"
+        }}>
+          <h3 style={{ marginTop: 0, marginBottom: 8, color: "#0369a1" }}>
+            ✨ Multiple Instances Feature
+          </h3>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6 }}>
+            All three sections below use the default <code style={{
+              background: "#fff",
+              padding: "2px 6px",
+              borderRadius: 3,
+              fontSize: 13
+            }}>highlightName="highlight"</code>. Previously, only the last instance would work
+            (overwriting the others). Now they all work together seamlessly via automatic range merging!
+          </p>
+          <p style={{ margin: "8px 0 0", fontSize: 13, fontWeight: 600 }}>
+            Total highlights across all sections: {matchCount1 + matchCount2 + matchCount3}
+          </p>
+        </div>
+
+        {/* First instance - highlighting "React" */}
+        <Highlight
+          search="React"
+          targetRef={contentRef1}
+          onHighlightChange={setMatchCount1}
+        />
+        <div
+          ref={contentRef1}
+          style={{
+            padding: 16,
+            border: "2px solid #e5e7eb",
+            borderRadius: 6,
+            marginBottom: 16,
+            background: "#fff"
+          }}
+        >
+          <h4 style={{ marginTop: 0, marginBottom: 8, color: "#374151" }}>
+            Section 1: React Overview <span style={{
+              fontSize: 12,
+              fontWeight: "normal",
+              color: "#6b7280",
+              background: "#fef3c7",
+              padding: "2px 8px",
+              borderRadius: 3
+            }}>
+              {matchCount1} matches
+            </span>
+          </h4>
+          <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+            React is a JavaScript library for building user interfaces.
+            React makes it painless to create interactive UIs.
+            Design simple views for each state in your React application,
+            and React will efficiently update and render just the right components
+            when your data changes.
+          </p>
+        </div>
+
+        {/* Second instance - highlighting "JavaScript" */}
+        <Highlight
+          search="JavaScript"
+          targetRef={contentRef2}
+          onHighlightChange={setMatchCount2}
+        />
+        <div
+          ref={contentRef2}
+          style={{
+            padding: 16,
+            border: "2px solid #e5e7eb",
+            borderRadius: 6,
+            marginBottom: 16,
+            background: "#fff"
+          }}
+        >
+          <h4 style={{ marginTop: 0, marginBottom: 8, color: "#374151" }}>
+            Section 2: JavaScript Language <span style={{
+              fontSize: 12,
+              fontWeight: "normal",
+              color: "#6b7280",
+              background: "#fef3c7",
+              padding: "2px 8px",
+              borderRadius: 3
+            }}>
+              {matchCount2} matches
+            </span>
+          </h4>
+          <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+            JavaScript is a versatile programming language that powers the modern web.
+            JavaScript can update and change both HTML and CSS.
+            JavaScript is the world's most popular programming language.
+            JavaScript is the programming language of the Web.
+          </p>
+        </div>
+
+        {/* Third instance - highlighting "API" */}
+        <Highlight
+          search="API"
+          targetRef={contentRef3}
+          onHighlightChange={setMatchCount3}
+        />
+        <div
+          ref={contentRef3}
+          style={{
+            padding: 16,
+            border: "2px solid #e5e7eb",
+            borderRadius: 6,
+            background: "#fff"
+          }}
+        >
+          <h4 style={{ marginTop: 0, marginBottom: 8, color: "#374151" }}>
+            Section 3: CSS Custom Highlight API <span style={{
+              fontSize: 12,
+              fontWeight: "normal",
+              color: "#6b7280",
+              background: "#fef3c7",
+              padding: "2px 8px",
+              borderRadius: 3
+            }}>
+              {matchCount3} matches
+            </span>
+          </h4>
+          <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+            The CSS Custom Highlight API provides a mechanism for styling arbitrary text ranges.
+            This API allows you to programmatically create highlights without modifying the DOM.
+            The Highlight API is a modern browser feature for efficient text highlighting.
+          </p>
+        </div>
+      </div>
+    );
+  },
+};
+
