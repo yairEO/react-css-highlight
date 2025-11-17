@@ -1,4 +1,4 @@
-import { cloneElement, isValidElement, useRef } from "react";
+import { cloneElement, isValidElement, type ReactElement, useRef } from "react";
 import Highlight from "./Highlight";
 import type { HighlightWrapperProps } from "./Highlight.types";
 
@@ -25,7 +25,7 @@ import type { HighlightWrapperProps } from "./Highlight.types";
 export default function HighlightWrapper({
   children,
   ...highlightProps
-}: HighlightWrapperProps) {
+}: HighlightWrapperProps): ReactElement {
   const contentRef = useRef<HTMLElement>(null);
 
   if (!isValidElement(children)) {
@@ -34,7 +34,8 @@ export default function HighlightWrapper({
         "HighlightWrapper: children must be a single valid React element that accepts a ref"
       );
     }
-    return children;
+    // Render children without highlighting as fallback
+    return <>{children}</>;
   }
 
   // Clone the child element and inject our ref
