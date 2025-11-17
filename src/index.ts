@@ -7,6 +7,7 @@ export {
   IGNORED_TAG_NAMES,
   SLOW_SEARCH_THRESHOLD_MS,
 } from "./Highlight.constants";
+export { useHighlight } from "./Highlight.hooks";
 // Export types
 export type {
   HighlightMatch,
@@ -18,4 +19,3 @@ export type {
 export { default as HighlightWrapper } from "./HighlightWrapper";
 // Export hooks for advanced usage
 export { useDebounce } from "./useDebounce";
-export { useHighlight } from "./Highlight.hooks";

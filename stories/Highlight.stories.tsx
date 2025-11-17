@@ -5,14 +5,14 @@ import HighlightWrapper from "../src/HighlightWrapper";
 import "../src/Highlight.css";
 import {
   AboutHighlightComponentContent,
-  SystemLogContent,
-  DataProcessingContent,
-  WholeWordExampleContent,
   CustomStylingContent,
-  SystemStatusContent,
-  WrapperExampleContent,
-  SimpleExampleContent,
+  DataProcessingContent,
   MultipleHighlightsContent,
+  SimpleExampleContent,
+  SystemLogContent,
+  SystemStatusContent,
+  WholeWordExampleContent,
+  WrapperExampleContent,
 } from "./content";
 
 const meta: Meta<typeof Highlight> = {

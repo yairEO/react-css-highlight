@@ -1,0 +1,142 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.5/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "master"
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["src/**", "stories/**"]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 85,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "expand": "auto",
+    "useEditorconfig": true,
+    "includes": ["frontend/**/*"]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "nursery": {
+        "noReactForwardRef": "warn",
+        "noUnresolvedImports": "off",
+        "noFloatingPromises": "warn",
+        "noImportCycles": "error"
+      },
+      "performance": {
+        "noAccumulatingSpread": "warn"
+      },
+      "suspicious": {
+        "useIterableCallbackReturn": "warn",
+        "noUnknownAtRules": "off",
+        "noAssignInExpressions": "warn",
+        "noArrayIndexKey": "warn",
+        "noDoubleEquals": "warn",
+        "noEmptyBlockStatements": "off",
+        "useIsArray": "warn",
+        "noConsole": {
+          "level": "error",
+          "options": {
+            "allow": ["warn", "error", "assert"]
+          }
+        }
+      },
+      "correctness": {
+        "noNestedComponentDefinitions": "off",
+        "useUniqueElementIds": "off",
+        "noSelfAssign": "error",
+        "useValidTypeof": "error",
+        "noInvalidBuiltinInstantiation": "error",
+        "noUndeclaredVariables": "error",
+        "noChildrenProp": "off",
+        "noUnsafeOptionalChaining": "error",
+        "noUnusedVariables": {
+          "level": "warn",
+          "options": {
+            "ignoreRestSiblings": true
+          }
+        },
+        "useExhaustiveDependencies": {
+          "options": {
+            "hooks": [{ "name": "useState", "stableResult": [1] }]
+          }
+        },
+        "noConstantCondition": "warn",
+        "noUnusedImports": "error",
+        "noVoidTypeReturn": "error"
+      },
+      "complexity": {
+        "noUselessFragments": "error",
+        "useLiteralKeys": "off",
+        "noCommaOperator": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "useTemplate": "off"
+      },
+      "a11y": "off"
+    },
+    "includes": ["frontend/**/*"]
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always"
+    }
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.ts", "**/*.tsx"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noDangerouslySetInnerHtml": "warn"
+          },
+          "correctness": {
+            "noUnusedVariables": "error"
+          },
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [{ "source": "react" }, {}]
+          }
+        }
+      }
+    }
+  }
+}
