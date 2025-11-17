@@ -272,6 +272,8 @@ function CustomHighlightComponent() {
 
 This library also provides a framework-agnostic API for use with Vue, Svelte, Angular, or vanilla JavaScript. Import from `react-css-highlight/vanilla` to use the `createHighlight()` function and utility APIs without React dependencies.
 
+> **Requirements:** This package uses ES modules and requires a bundler (Vite, Webpack, Esbuild) or module system. It does not support plain `<script>` tags without a build tool.
+
 📖 **[See Vanilla JS Documentation →](src/vanilla/README.md)**
 
 ---

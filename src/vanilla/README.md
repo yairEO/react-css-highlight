@@ -18,6 +18,8 @@ const controller = createHighlight(document.getElementById('content'), {
 });
 ```
 
+> **Note:** This package requires a bundler (Vite, Webpack, Esbuild, etc.) or module system (Node.js, ES modules). It does not work with plain `<script>` tags. If you need a no-build solution, see the [Full Documentation](../../README.md) for alternatives.
+
 ## API
 
 ### `createHighlight(element, options)`
