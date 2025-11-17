@@ -5,6 +5,9 @@ import {
 } from "./Highlight.constants";
 import type { HighlightMatch } from "./Highlight.types";
 
+// Development mode flag for performance logging (tree-shaken in production)
+const __DEV__ = process.env.NODE_ENV === "development";
+
 /**
  * Check if CSS Custom Highlight API is supported
  */
@@ -78,7 +81,7 @@ function compileSearchPatterns(
           pattern: createSearchPattern(term, caseSensitive, wholeWord),
         };
       } catch (error) {
-        if (process.env.NODE_ENV === "development") {
+        if (__DEV__) {
           console.warn(`[Highlight] Invalid search term: "${term}"`, error);
         }
         return null;
@@ -174,7 +177,7 @@ function logSlowSearch(
   matchCount: number,
   termCount: number
 ): void {
-  if (process.env.NODE_ENV !== "development" || !startTime) {
+  if (!__DEV__ || !startTime) {
     return;
   }
 
@@ -305,7 +308,7 @@ export function findTextMatches(
   ignoredTags?: string[]
 ): HighlightMatch[] {
   // Setup
-  const startTime = process.env.NODE_ENV === "development" ? performance.now() : 0;
+  const startTime = __DEV__ ? performance.now() : 0;
   const normalizedIgnoredTags = normalizeIgnoredTags(ignoredTags);
   const patterns = compileSearchPatterns(searchTerms, caseSensitive, wholeWord);
 
@@ -367,6 +370,5 @@ export function removeHighlight(highlightName: string): void {
  * Normalize search terms to array
  */
 export function normalizeSearchTerms(search: string | string[]): string[] {
-  const terms = Array.isArray(search) ? search : [search];
-  return terms.filter((term) => term.trim().length > 0);
+  return [search].flat().filter(t => t.trim());
 }
