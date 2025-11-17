@@ -175,6 +175,9 @@ export function createHighlight(
     };
   }
 
+  // Create unique instance ID for range tracking
+  let instanceId = Symbol("vanilla-highlight");
+
   // Merge with defaults
   let currentOptions: ResolvedHighlightOptions = {
     search: options.search,
@@ -198,7 +201,7 @@ export function createHighlight(
 
       if (searchTerms.length === 0) {
         // Clear existing highlights if no search terms
-        removeHighlight(currentOptions.highlightName);
+        removeHighlight(currentOptions.highlightName, instanceId);
         matchCount = 0;
         currentOptions.onHighlightChange(matchCount);
         return;
@@ -214,9 +217,9 @@ export function createHighlight(
         currentOptions.ignoredTags
       );
 
-      // Register with CSS.highlights
+      // Register with CSS.highlights (returns updated instanceId)
       const ranges = matches.map((m) => m.range);
-      registerHighlight(currentOptions.highlightName, ranges);
+      instanceId = registerHighlight(currentOptions.highlightName, ranges, instanceId);
 
       matchCount = matches.length;
       currentOptions.onHighlightChange(matchCount);
@@ -253,7 +256,7 @@ export function createHighlight(
 
       // Remove old highlight if name changed
       if (newOptions.highlightName && newOptions.highlightName !== currentOptions.highlightName) {
-        removeHighlight(currentOptions.highlightName);
+        removeHighlight(currentOptions.highlightName, instanceId);
       }
 
       // Merge new options (spread preserves current values for undefined properties)
@@ -267,7 +270,7 @@ export function createHighlight(
     },
 
     destroy() {
-      removeHighlight(currentOptions.highlightName);
+      removeHighlight(currentOptions.highlightName, instanceId);
       matchCount = 0;
     },
   };

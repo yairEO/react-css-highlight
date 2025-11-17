@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { DEFAULT_DEBOUNCE_MS, DEFAULT_MAX_HIGHLIGHTS } from "./Highlight.constants";
 import type { HighlightProps, UseHighlightResult } from "./Highlight.types";
 import {
@@ -25,6 +25,12 @@ export function useHighlight({
   const [matchCount, setMatchCount] = useState(0);
   const [error, setError] = useState<Error | null>(null);
   const isSupported = isHighlightAPISupported();
+
+  // Create stable instance ID for this component
+  const instanceIdRef = useRef<symbol | undefined>(undefined);
+  if (!instanceIdRef.current) {
+    instanceIdRef.current = Symbol("highlight-instance");
+  }
 
   // Debounce search input to prevent excessive re-highlighting
   const debouncedSearch = useDebounce(search, debounce);
@@ -61,7 +67,7 @@ export function useHighlight({
     const searchTerms = normalizeSearchTerms(debouncedSearch);
 
     if (searchTerms.length === 0) {
-      removeHighlight(highlightName);
+      removeHighlight(highlightName, instanceIdRef.current);
       setMatchCount(0);
       handleHighlightChange(0);
       return;
@@ -82,7 +88,7 @@ export function useHighlight({
             );
 
             const ranges = matches.map((match) => match.range);
-            registerHighlight(highlightName, ranges);
+            instanceIdRef.current = registerHighlight(highlightName, ranges, instanceIdRef.current);
 
             setMatchCount(matches.length);
             setError(null);
@@ -98,7 +104,7 @@ export function useHighlight({
 
       return () => {
         cancelIdleCallback(idleCallback);
-        removeHighlight(highlightName);
+        removeHighlight(highlightName, instanceIdRef.current);
       };
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));

@@ -343,27 +343,66 @@ export function findTextMatches(
   return matches;
 }
 
+// Track ranges per instance to support multiple components sharing same highlightName
+const instanceRanges = new Map<string, Map<symbol, Range[]>>();
+
 /**
  * Register highlights with CSS.highlights API
+ * Supports multiple instances sharing the same highlightName
  */
-export function registerHighlight(highlightName: string, ranges: Range[]): void {
+export function registerHighlight(highlightName: string, ranges: Range[], instanceId?: symbol): symbol {
   if (!isHighlightAPISupported()) {
-    return;
+    return instanceId || Symbol();
   }
 
-  const highlight = new Highlight(...ranges);
+  const id = instanceId || Symbol();
+
+  // Store ranges for this instance
+  if (!instanceRanges.has(highlightName)) {
+    instanceRanges.set(highlightName, new Map());
+  }
+  instanceRanges.get(highlightName)!.set(id, ranges);
+
+  // Merge all ranges from all instances and update CSS.highlights
+  const allRanges = Array.from(instanceRanges.get(highlightName)!.values()).flat();
+  const highlight = new Highlight(...allRanges);
   CSS.highlights.set(highlightName, highlight);
+
+  return id;
 }
 
 /**
  * Remove highlight from CSS.highlights API
+ * If instanceId provided, only removes that instance's ranges
  */
-export function removeHighlight(highlightName: string): void {
+export function removeHighlight(highlightName: string, instanceId?: symbol): void {
   if (!isHighlightAPISupported()) {
     return;
   }
 
-  CSS.highlights.delete(highlightName);
+  if (!instanceId) {
+    // Legacy behavior: remove entire highlightName
+    instanceRanges.delete(highlightName);
+    CSS.highlights.delete(highlightName);
+    return;
+  }
+
+  // Remove this instance's ranges
+  const instances = instanceRanges.get(highlightName);
+  if (!instances) return;
+
+  instances.delete(instanceId);
+
+  if (instances.size === 0) {
+    // No instances left, remove from CSS.highlights
+    instanceRanges.delete(highlightName);
+    CSS.highlights.delete(highlightName);
+  } else {
+    // Re-merge remaining instances
+    const allRanges = Array.from(instances.values()).flat();
+    const highlight = new Highlight(...allRanges);
+    CSS.highlights.set(highlightName, highlight);
+  }
 }
 
 /**
