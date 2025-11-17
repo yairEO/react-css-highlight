@@ -13,7 +13,7 @@
 
 - **[Vanilla JS Demo](https://yaireo.github.io/react-css-highlight/vanilla-demo/)** - Pure JavaScript implementation (no framework)
 - **[React Storybook](https://yaireo.github.io/react-css-highlight/)** - Interactive examples with all features
-- **[Codesandbox demo](https://codesandbox.io/p/sandbox/sft3zr?file=%2Fsrc%2Findex.tsx) - basic use cases
+- **[Codesandbox demo](https://codesandbox.io/p/sandbox/sft3zr?file=%2Fsrc%2Findex.tsx)** - basic use cases
 
 ## ✨ Features
 
