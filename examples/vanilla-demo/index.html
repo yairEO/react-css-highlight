@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanilla Highlight Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      padding: 2rem;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      color: #1a202c;
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .controls {
+      background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+      padding: 2rem;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .control-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+      color: #2d3748;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+
+    input[type="text"]::placeholder {
+      color: #a0aec0;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0;
+      cursor: pointer;
+      padding: 0.75rem 1.25rem;
+      background: white;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .checkbox-group label:hover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #667eea;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      padding: 1.75rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+
+    .content {
+      background: white;
+      padding: 2.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      min-height: 300px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .content h2 {
+      color: #1a202c;
+      margin: 2.5rem 0 1.25rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .content h2:first-child {
+      margin-top: 0;
+    }
+
+    .content p {
+      margin-bottom: 1.25rem;
+      color: #4a5568;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .content code {
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #667eea;
+      border: 1px solid #e2e8f0;
+      font-weight: 500;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    button.primary:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: white;
+      color: #4a5568;
+      border: 2px solid #e2e8f0;
+    }
+
+    button.secondary:hover {
+      background: #f7fafc;
+      border-color: #cbd5e0;
+      transform: translateY(-2px);
+    }
+
+    button.secondary:active {
+      transform: translateY(0);
+    }
+
+    .warning {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #fbbf24;
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      color: #92400e;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(251, 191, 36, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .container {
+        padding: 1.5rem;
+        border-radius: 16px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .controls {
+        padding: 1.5rem;
+      }
+
+      .checkbox-group {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+  <!-- Highlight.css is imported via main.js -->
+</head>
+<body>
+  <div class="container">
+    <h1>Vanilla JS Highlight Demo</h1>
+
+    <div id="browser-check"></div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label for="searchInput">Search Terms (comma-separated):</label>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="e.g., React, JavaScript, CSS"
+          value="high, css"
+        >
+      </div>
+
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" id="caseSensitive">
+          Case Sensitive
+        </label>
+        <label>
+          <input type="checkbox" id="wholeWord">
+          Whole Word
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button class="primary" id="updateBtn">Update Highlights</button>
+        <button class="secondary" id="clearBtn">Clear</button>
+        <button class="secondary" id="destroyBtn">Destroy</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">Matches Found</span>
+        <span class="stat-value" id="matchCount">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Search Terms</span>
+        <span class="stat-value" id="termCount">0</span>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+      <h2>CSS Custom Highlight API</h2>
+      <p>
+        This library leverages the modern CSS Custom Highlight API to provide non-invasive text highlighting
+        capabilities. Unlike traditional approaches that wrap text in HTML elements like <code>&lt;mark&gt;</code>
+        or <code>&lt;span&gt;</code>, the CSS Custom Highlight API allows you to style arbitrary text ranges
+        without mutating the DOM structure. This means your original HTML remains untouched, making it perfect
+        for highlighting search results, annotations, or any dynamic text selection without interfering with
+        your existing markup or event handlers. The API uses the <code>::highlight()</code> pseudo-element
+        combined with JavaScript Range objects to create highlights that are rendered by the browser's
+        compositing engine, resulting in excellent performance even with thousands of highlights.
+      </p>
+
+      <h2>Framework-Agnostic Design</h2>
+      <p>
+        One of the key strengths of this library is its framework-agnostic architecture. The core highlighting
+        logic is written in pure TypeScript and uses only standard browser APIs like TreeWalker, Range, and
+        CSS.highlights. This means you can use it with any JavaScript framework—Vue, Svelte, Angular, or even
+        plain vanilla JavaScript—without any framework-specific dependencies. The vanilla JavaScript API
+        provides a simple, imperative interface through the <code>createHighlight()</code> function, which
+        returns a controller object for managing highlights. This design philosophy ensures that the library
+        remains lightweight, performant, and easy to integrate into any project, regardless of your technology
+        stack. Whether you're building a complex single-page application or a simple static website, this
+        library fits seamlessly into your workflow.
+      </p>
+
+      <h2>Performance and Efficiency</h2>
+      <p>
+        Performance is a critical consideration when implementing text highlighting, especially when dealing
+        with large documents or frequent updates. This library addresses these challenges through several
+        optimizations. The TreeWalker API is used for efficient DOM traversal, allowing the library to process
+        only text nodes while automatically skipping script tags, style elements, and other non-content nodes.
+        Regex patterns are pre-compiled once per search term, avoiding repeated compilation overhead. The
+        library also implements configurable limits on the maximum number of highlights to prevent performance
+        degradation, and includes built-in debouncing support for scenarios where search terms change
+        frequently, such as real-time search interfaces. These optimizations ensure that highlighting remains
+        fast and responsive even when processing thousands of matches across complex document structures, making
+        it suitable for use in production applications where performance matters.
+      </p>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
+

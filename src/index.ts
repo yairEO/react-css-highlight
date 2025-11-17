@@ -15,6 +15,14 @@ export type {
   HighlightWrapperProps,
   UseHighlightResult,
 } from "./Highlight.types";
+// Export utility functions for advanced usage
+export {
+  findTextMatches,
+  isHighlightAPISupported,
+  normalizeSearchTerms,
+  registerHighlight,
+  removeHighlight,
+} from "./Highlight.utils";
 // Convenience wrapper component (named export for simple cases)
 export { default as HighlightWrapper } from "./HighlightWrapper";
 // Export hooks for advanced usage

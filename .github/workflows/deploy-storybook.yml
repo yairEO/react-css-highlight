@@ -1,4 +1,4 @@
-name: Deploy Storybook to GitHub Pages
+name: Deploy Storybook & Demos to GitHub Pages
 
 # Run workflow on pushes to the 'master' branch
 on:
@@ -39,6 +39,17 @@ jobs:
 
             - name: Build Storybook
               run: pnpm run build-storybook
+
+            - name: Build Vanilla Demo
+              run: |
+                  cd examples/vanilla-demo
+                  pnpm install --frozen-lockfile
+                  pnpm run build
+
+            - name: Copy Vanilla Demo to Storybook
+              run: |
+                  mkdir -p storybook-static/vanilla-demo
+                  cp -r examples/vanilla-demo/dist/* storybook-static/vanilla-demo/
 
             - name: Setup GitHub Pages
               uses: actions/configure-pages@v4

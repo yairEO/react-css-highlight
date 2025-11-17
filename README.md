@@ -9,6 +9,11 @@
 
 <img src="https://github.com/user-attachments/assets/ac19c4cb-ae11-4090-ba65-0300f67f198f" />
 
+## 🎮 Live Demos
+
+- **[Vanilla JS Demo](https://yaireo.github.io/react-css-highlight/vanilla-demo/)** - Pure JavaScript implementation (no framework)
+- **[React Storybook](https://yaireo.github.io/react-css-highlight/)** - Interactive examples with all features
+
 
 ## ✨ Features
 
@@ -17,8 +22,9 @@
 - 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
 - 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
 - 📦 **Zero Dependencies** - Pure React + Modern Browser APIs
-- 🧩 **Two Usage Patterns** - Ref-based (power users) or wrapper (convenience)
+- 🧩 **Multiple Usage Patterns** - React (ref-based/wrapper/hook) or vanilla JS (framework-agnostic)
 - 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
+- 🔌 **Framework Agnostic** - Use with React, Vue, Svelte, Angular, or vanilla JavaScript
 
 
 ## 📖 Table of Contents
@@ -26,9 +32,11 @@
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
 - [Usage Patterns](#-usage-patterns)
-  - [Component (Ref-Based)](#1-component-ref-based)
-  - [Wrapper (Simple)](#2-wrapper-simple)
-  - [Hook (Maximum Control)](#3-hook-maximum-control)
+  - [React Usage](#react-usage)
+    - [Component (Ref-Based)](#1-component-ref-based)
+    - [Wrapper (Simple)](#2-wrapper-simple)
+    - [Hook (Maximum Control)](#3-hook-maximum-control)
+  - [Vanilla JavaScript Usage](#vanilla-javascript-usage)
 - [API Reference](#-api-reference)
 - [Styling](#-styling)
 - [Performance](#-performance)
@@ -64,7 +72,7 @@ yarn add react-css-highlight
 
 ```tsx
 import { useRef } from "react";
-import Highlight from "@/components/general/Highlight";
+import Highlight from "react-css-highlight";
 
 function SearchResults() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -85,7 +93,11 @@ function SearchResults() {
 
 ## 📚 Usage Patterns
 
-There are three ways to use this library, each suited for different scenarios:
+This library can be used in **React** or **vanilla JavaScript** (Vue, Svelte, Angular, etc.).
+
+### React Usage
+
+There are three ways to use this library in React, each suited for different scenarios:
 
 ### 1. Component (Ref-Based)
 
@@ -254,6 +266,15 @@ function CustomHighlightComponent() {
   - Build complex components that need highlight state
   - Integrate with form state or other React state management
 
+---
+
+### Vanilla JavaScript Usage
+
+This library also provides a framework-agnostic API for use with Vue, Svelte, Angular, or vanilla JavaScript. Import from `react-css-highlight/vanilla` to use the `createHighlight()` function and utility APIs without React dependencies.
+
+📖 **[See Vanilla JS Documentation →](src/vanilla/README.md)**
+
+---
 
 ## 📋 API Reference
 
@@ -514,7 +535,7 @@ Create custom highlight styles by providing a `highlightName`:
 The component automatically detects browser support:
 
 ```tsx
-import { isHighlightAPISupported } from "@/components/general/Highlight/utils";
+import { isHighlightAPISupported } from "react-css-highlight";
 
 if (!isHighlightAPISupported()) {
   console.warn("Browser doesn't support CSS Custom Highlight API");

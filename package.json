@@ -8,7 +8,9 @@
     "css",
     "highlight",
     "text",
-    "component"
+    "component",
+    "vanilla-js",
+    "framework-agnostic"
   ],
   "license": "MIT",
   "browserslist": [
@@ -37,6 +39,17 @@
   "author": "Yair Even-Or <vsync.design@gmail.com>",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./vanilla": {
+      "types": "./src/vanilla/index.ts",
+      "default": "./src/vanilla/index.ts"
+    },
+    "./styles": "./src/Highlight.css"
+  },
   "files": [
     "src",
     "README.md",
