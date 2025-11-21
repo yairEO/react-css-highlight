@@ -12,3 +12,5 @@ storybook-static
 
 # Exclude GitHub Actions workflows
 .github
+
+.cursor
