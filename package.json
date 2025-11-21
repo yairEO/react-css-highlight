@@ -1,6 +1,6 @@
 {
   "name": "react-css-highlight",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "homepage": "https://github.com/yairEO/react-css-highlight",
   "description": "A powerful, zero-dependency React component for highlighting text using the modern CSS Custom Highlight API with TreeWalker for blazing-fast DOM traversal",
   "keywords": [
