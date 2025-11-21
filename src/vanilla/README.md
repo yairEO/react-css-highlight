@@ -32,6 +32,7 @@ Creates a highlight controller for managing text highlights.
 interface HighlightController {
   readonly matchCount: number;
   update(options: Partial<HighlightOptions>): void;
+  refresh(): void;
   destroy(): void;
 }
 ```
@@ -117,6 +118,30 @@ const controller = createHighlight(content, {
 input.addEventListener('input', (e) => {
   controller.update({ search: e.target.value });
 });
+```
+
+### Dynamic Content
+
+For virtualized lists or dynamically changing content, use `refresh()`:
+
+```javascript
+const content = document.getElementById('virtualList');
+
+const controller = createHighlight(content, {
+  search: 'keyword'
+});
+
+// After DOM changes (virtualization, infinite scroll, etc.)
+virtualList.addEventListener('scroll', () => {
+  // DOM has changed, re-highlight
+  controller.refresh();
+});
+
+// Or after programmatic content updates
+function updateContent(newItems) {
+  renderItems(newItems);
+  controller.refresh(); // Re-highlight new DOM
+}
 ```
 
 ## Utility Functions

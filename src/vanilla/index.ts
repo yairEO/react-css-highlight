@@ -97,6 +97,21 @@ export interface HighlightController {
   /** Update highlight with new options */
   update(options: Partial<HighlightOptions>): void;
 
+  /**
+   * Manually trigger re-highlighting with current options.
+   * Useful for dynamic content scenarios like virtualized lists,
+   * infinite scroll, or when DOM content changes externally.
+   *
+   * @example
+   * ```js
+   * const controller = createHighlight(element, { search: "term" });
+   *
+   * // Re-highlight after DOM changes
+   * controller.refresh();
+   * ```
+   */
+  refresh(): void;
+
   /** Remove all highlights and cleanup */
   destroy(): void;
 }
@@ -266,6 +281,10 @@ export function createHighlight(
       } as ResolvedHighlightOptions;
 
       // Re-apply highlights
+      applyHighlights();
+    },
+
+    refresh() {
       applyHighlights();
     },
 
