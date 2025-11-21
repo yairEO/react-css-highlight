@@ -77,6 +77,22 @@ export interface UseHighlightResult {
   matchCount: number;
   isSupported: boolean;
   error: Error | null;
+  /**
+   * Manually trigger a re-highlighting operation.
+   * Useful for dynamic content scenarios like virtualized lists,
+   * infinite scroll, or when DOM content changes externally.
+   *
+   * @example
+   * ```tsx
+   * const { refresh } = useHighlight({ search: "term", targetRef });
+   *
+   * // Re-highlight after virtualized list updates
+   * useEffect(() => {
+   *   refresh();
+   * }, [visibleRows, refresh]);
+   * ```
+   */
+  refresh: () => void;
 }
 
 /**

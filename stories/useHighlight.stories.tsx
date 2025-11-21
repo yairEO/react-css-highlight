@@ -65,7 +65,7 @@ export const InteractiveSearch: Story = {
     const [wholeWord, setWholeWord] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    const { matchCount, isSupported, error } = useHighlight({
+    const { matchCount, isSupported, error, refresh } = useHighlight({
       search: searchTerm,
       targetRef: contentRef,
       caseSensitive,
@@ -115,6 +115,7 @@ export const InteractiveSearch: Story = {
               />
               Whole word
             </label>
+            <button onClick={refresh} style={{ marginLeft: "auto", padding: "8px 16px", borderRadius: "4px", backgroundColor: "#007bff", color: "#fff", border: "none", cursor: "pointer" }}>Refresh</button>
           </div>
 
           <div
@@ -142,7 +143,7 @@ export const InteractiveSearch: Story = {
           </div>
         </div>
 
-        <div ref={contentRef} style={{ lineHeight: 1.6 }}>
+        <div ref={contentRef} style={{ lineHeight: 1.6 }} contentEditable>
           {ReactEcosystemContent}
         </div>
       </div>

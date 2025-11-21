@@ -255,6 +255,7 @@ function CustomHighlightComponent() {
 | `matchCount` | `number` | Number of highlighted matches found |
 | `isSupported` | `boolean` | Whether the browser supports CSS Custom Highlight API |
 | `error` | `Error \| null` | Error object if highlighting failed, null otherwise |
+| `refresh` | `() => void` | Manually trigger re-highlighting (useful for dynamic content) |
 
 **When to use the hook vs component:**
 
@@ -265,6 +266,7 @@ function CustomHighlightComponent() {
   - Conditionally render UI based on browser support
   - Build complex components that need highlight state
   - Integrate with form state or other React state management
+  - Manually control re-highlighting for dynamic content (virtualized lists, infinite scroll, etc.)
 
 ---
 
@@ -319,6 +321,7 @@ const { matchCount, isSupported, error } = useHighlight({
 | `matchCount` | `number` | Number of matches currently highlighted |
 | `isSupported` | `boolean` | Whether browser supports CSS Custom Highlight API |
 | `error` | `Error \| null` | Error object if highlighting failed, null otherwise |
+| `refresh` | `() => void` | Manually trigger re-highlighting (useful for dynamic content, virtualized lists, etc.) |
 
 ### `Highlight` Component Props
 
@@ -598,7 +601,7 @@ function SearchWithStats() {
   const [searchTerm, setSearchTerm] = useState("");
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const { matchCount, isSupported, error } = useHighlight({
+  const { matchCount, isSupported, error, refresh } = useHighlight({
     search: searchTerm,
     targetRef: contentRef,
     debounce: 300,
@@ -637,6 +640,54 @@ function SearchWithStats() {
 
       <div ref={contentRef} className="content">
         {/* Your content here */}
+      </div>
+    </div>
+  );
+}
+```
+
+### Dynamic Content / Virtualized Lists
+
+For virtualized lists or dynamically changing content, use the `refresh()` callback:
+
+```tsx
+import { useEffect, useRef, useState } from "react";
+import { useHighlight } from "react-css-highlight";
+import VirtualList from "react-virtual-list"; // or any virtualization library
+
+function VirtualizedSearchList() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [visibleRows, setVisibleRows] = useState([]);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const { matchCount, refresh } = useHighlight({
+    search: searchTerm,
+    targetRef: listRef,
+    debounce: 300,
+  });
+
+  // Re-highlight when visible rows change (virtualization updates DOM)
+  useEffect(() => {
+    refresh();
+  }, [visibleRows, refresh]);
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search in list..."
+      />
+      <p>Found {matchCount} matches</p>
+
+      <div ref={listRef}>
+        <VirtualList
+          items={items}
+          onVisibleRowsChange={setVisibleRows}
+        >
+          {(item) => <div>{item.content}</div>}
+        </VirtualList>
       </div>
     </div>
   );
@@ -946,10 +997,25 @@ const debouncedSearch = useDebounce(searchTerm, 300);
 
 ### Highlights don't update when content changes
 
-**Solution:** Content is assumed to be static. If content changes, re-render the Highlight component:
+**Solution:** For dynamic content (virtualized lists, infinite scroll, etc.), use the `refresh()` callback:
 
 ```tsx
-// Force re-render with key
+// Using the hook with refresh
+const { refresh } = useHighlight({
+  search: "term",
+  targetRef: contentRef
+});
+
+// Re-highlight after content changes
+useEffect(() => {
+  refresh();
+}, [contentVersion, refresh]);
+```
+
+**Alternative:** Force re-render the Highlight component with a key:
+
+```tsx
+// Works but less efficient
 <Highlight
   key={contentVersion}
   search="term"
