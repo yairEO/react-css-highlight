@@ -327,7 +327,7 @@ const { matchCount, isSupported, error } = useHighlight({
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `search` | `string \| string[]` | **required** | Text to highlight (supports multiple terms) |
+| `search` | `string \| string[]` | **required** | Text to highlight (supports multiple terms). If array is passed, make sure it is memoed |
 | `targetRef` | `RefObject<HTMLElement \| null>` | **required** | Ref to the element to search within |
 | `highlightName` | `string` | `"highlight"` | CSS highlight name (use predefined styles from `Highlight.css`) |
 | `caseSensitive` | `boolean` | `false` | Case-sensitive search |
@@ -467,13 +467,15 @@ Create custom highlight styles by providing a `highlightName`:
 // ✅ Good - Single highlight with reasonable limit
 <Highlight search="term" targetRef={ref} maxHighlights={500} />
 
-// ✅ Good - Pre-filter search terms
+// ✅ Good - Pre-filter search terms and memo the result
+const toHighlight = useMemo(() => terms.filter(t => t.length > 2), [terms])
+
 <Highlight
-  search={terms.filter(t => t.length > 2)}
+  search={toHighlight}
   targetRef={ref}
 />
 
-// ⚠️ Caution - Many terms on huge documents
+// ⚠️ Caution - Many terms on huge documents and the array is not memoed
 <Highlight
   search={[...100terms]}
   targetRef={ref}

@@ -409,5 +409,5 @@ export function removeHighlight(highlightName: string, instanceId?: symbol): voi
  * Normalize search terms to array
  */
 export function normalizeSearchTerms(search: string | string[]): string[] {
-  return [search].flat().filter(t => t.trim());
+  return [search].flat().filter(t => t?.trim?.());
 }

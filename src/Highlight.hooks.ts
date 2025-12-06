@@ -11,7 +11,7 @@ import {
 import { useDebounce } from "./useDebounce";
 
 export function useHighlight({
-  search,
+  search, // if array, should be memoed
   targetRef,
   highlightName = "highlight",
   caseSensitive = false,
