@@ -22,6 +22,7 @@
 import {
   findTextMatches,
   isHighlightAPISupported,
+  isSearchEmpty,
   normalizeSearchTerms,
   registerHighlight,
   removeHighlight,
@@ -40,10 +41,18 @@ export type { HighlightMatch } from "../Highlight.types";
 export {
   findTextMatches,
   isHighlightAPISupported,
+  isSearchEmpty,
   normalizeSearchTerms,
   registerHighlight,
   removeHighlight,
 } from "../Highlight.utils";
+
+const DEFAULT_RETURN: HighlightController = {
+  matchCount: 0,
+  update: () => {},
+  refresh: () => {},
+  destroy: () => {},
+};
 
 /**
  * Options for creating a highlight
@@ -91,7 +100,11 @@ type ResolvedHighlightOptions = HighlightOptions & {
  * Controller interface returned by createHighlight
  */
 export interface HighlightController {
-  /** Number of matches found */
+  /**
+   * Number of matches found.
+   * This value is calculated synchronously and reflects the most recent search results.
+   * Highlight styling is applied asynchronously for performance.
+   */
   readonly matchCount: number;
 
   /** Update highlight with new options */
@@ -102,15 +115,20 @@ export interface HighlightController {
    * Useful for dynamic content scenarios like virtualized lists,
    * infinite scroll, or when DOM content changes externally.
    *
+   * @param search - Optional search term(s) to use for this refresh (does not persist)
+   *
    * @example
    * ```js
    * const controller = createHighlight(element, { search: "term" });
    *
    * // Re-highlight after DOM changes
    * controller.refresh();
+   *
+   * // Re-highlight with different search term (temporary)
+   * controller.refresh('new-term');
    * ```
    */
-  refresh(): void;
+  refresh(search?: string | string[]): void;
 
   /** Remove all highlights and cleanup */
   destroy(): void;
@@ -167,6 +185,10 @@ export function createHighlight(
     throw new Error("createHighlight: options parameter is required");
   }
 
+  if (isSearchEmpty(options.search)) {
+    return DEFAULT_RETURN;
+  }
+
   // Validate search - must be non-empty string or non-empty array
   const normalizedSearch = Array.isArray(options.search)
     ? options.search.filter((t) => t && t.trim().length > 0)
@@ -179,19 +201,20 @@ export function createHighlight(
   }
 
   if (!isHighlightAPISupported()) {
-    const error = new Error("CSS Custom Highlight API is not supported in this browser");
+    const error = new Error(
+      "CSS Custom Highlight API is not supported in this browser"
+    );
     options.onError?.(error);
 
     // Return a no-op controller for unsupported browsers
-    return {
-      matchCount: 0,
-      update: () => {},
-      destroy: () => {},
-    };
+    return DEFAULT_RETURN;
   }
 
   // Create unique instance ID for range tracking
   let instanceId = Symbol("vanilla-highlight");
+
+  // Track pending idle callback for cancellation
+  let idleCallbackId: number | null = null;
 
   // Merge with defaults
   let currentOptions: ResolvedHighlightOptions = {
@@ -208,21 +231,28 @@ export function createHighlight(
   let matchCount = 0;
 
   /**
-   * Apply highlights based on current options
+   * Schedule highlighting using requestIdleCallback for non-blocking execution
    */
-  function applyHighlights(): void {
+  function scheduleHighlight(searchOverride?: string | string[]): void {
+    // Cancel any pending highlight operation to prevent race conditions
+    if (idleCallbackId !== null) {
+      cancelIdleCallback(idleCallbackId);
+    }
+
     try {
-      const searchTerms = normalizeSearchTerms(currentOptions.search);
+      // Calculate matchCount synchronously so getter returns latest value immediately
+      const searchToUse =
+        searchOverride !== undefined ? searchOverride : currentOptions.search;
+      const searchTerms = normalizeSearchTerms(searchToUse);
 
       if (searchTerms.length === 0) {
-        // Clear existing highlights if no search terms
-        removeHighlight(currentOptions.highlightName, instanceId);
         matchCount = 0;
-        currentOptions.onHighlightChange(matchCount);
+        currentOptions.onHighlightChange(0);
+        removeHighlight(currentOptions.highlightName, instanceId);
         return;
       }
 
-      // Find all matches
+      // Calculate matches synchronously for immediate matchCount access
       const matches = findTextMatches(
         element,
         searchTerms,
@@ -232,20 +262,40 @@ export function createHighlight(
         currentOptions.ignoredTags
       );
 
-      // Register with CSS.highlights (returns updated instanceId)
-      const ranges = matches.map((m) => m.range);
-      instanceId = registerHighlight(currentOptions.highlightName, ranges, instanceId);
-
       matchCount = matches.length;
       currentOptions.onHighlightChange(matchCount);
+
+      // Apply highlights asynchronously for non-blocking UI
+      idleCallbackId = requestIdleCallback(
+        () => {
+          idleCallbackId = null;
+          try {
+            // Register ranges with CSS Custom Highlight API
+            const ranges = matches.map((m) => m.range);
+            instanceId = registerHighlight(
+              currentOptions.highlightName,
+              ranges,
+              instanceId
+            );
+          } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            currentOptions.onError(err);
+          }
+        },
+        { timeout: 100 }
+      );
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       currentOptions.onError(err);
+      // Clear highlights on error
+      removeHighlight(currentOptions.highlightName, instanceId);
+      matchCount = 0;
+      currentOptions.onHighlightChange(0);
     }
   }
 
   // Initial highlight
-  applyHighlights();
+  scheduleHighlight();
 
   // Return controller
   return {
@@ -254,23 +304,33 @@ export function createHighlight(
     },
 
     update(newOptions: Partial<HighlightOptions>) {
+      if (isSearchEmpty(newOptions.search)) {
+        return DEFAULT_RETURN;
+      }
       // Validate search if provided (allow empty array to clear highlights)
       if (newOptions.search !== undefined) {
         if (Array.isArray(newOptions.search)) {
           // Empty array is valid (clears highlights)
-          const hasValidTerms = newOptions.search.some((t) => t && t.trim().length > 0);
+          const hasValidTerms = newOptions.search.some(
+            (t) => t && t.trim().length > 0
+          );
           if (newOptions.search.length > 0 && !hasValidTerms) {
             throw new Error(
               "createHighlight.update: options.search array contains only empty strings"
             );
           }
         } else if (!newOptions.search || !newOptions.search.trim()) {
-          throw new Error("createHighlight.update: options.search cannot be an empty string");
+          throw new Error(
+            "createHighlight.update: options.search cannot be an empty string"
+          );
         }
       }
 
       // Remove old highlight if name changed
-      if (newOptions.highlightName && newOptions.highlightName !== currentOptions.highlightName) {
+      if (
+        newOptions.highlightName &&
+        newOptions.highlightName !== currentOptions.highlightName
+      ) {
         removeHighlight(currentOptions.highlightName, instanceId);
       }
 
@@ -281,17 +341,22 @@ export function createHighlight(
       } as ResolvedHighlightOptions;
 
       // Re-apply highlights
-      applyHighlights();
+      scheduleHighlight();
     },
 
-    refresh() {
-      applyHighlights();
+    refresh(search?: string | string[]) {
+      scheduleHighlight(search);
     },
 
     destroy() {
+      // Cancel any pending highlight operation
+      if (idleCallbackId !== null) {
+        cancelIdleCallback(idleCallbackId);
+        idleCallbackId = null;
+      }
       removeHighlight(currentOptions.highlightName, instanceId);
       matchCount = 0;
+      currentOptions.onHighlightChange(0);
     },
   };
 }
-

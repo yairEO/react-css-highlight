@@ -1,14 +1,9 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
 import { DEFAULT_DEBOUNCE_MS, DEFAULT_MAX_HIGHLIGHTS } from "./Highlight.constants";
 import type { HighlightProps, UseHighlightResult } from "./Highlight.types";
-import {
-  findTextMatches,
-  isHighlightAPISupported,
-  normalizeSearchTerms,
-  registerHighlight,
-  removeHighlight,
-} from "./Highlight.utils";
+import { isHighlightAPISupported } from "./Highlight.utils";
 import { useDebounce } from "./useDebounce";
+import { createHighlight, type HighlightController } from "./vanilla";
 
 export function useHighlight({
   search, // if array, should be memoed
@@ -25,12 +20,7 @@ export function useHighlight({
   const [matchCount, setMatchCount] = useState(0);
   const [error, setError] = useState<Error | null>(null);
   const isSupported = isHighlightAPISupported();
-
-  // Create stable instance ID for this component
-  const instanceIdRef = useRef<symbol | undefined>(undefined);
-  if (!instanceIdRef.current) {
-    instanceIdRef.current = Symbol("highlight-instance");
-  }
+  const controllerRef = useRef<HighlightController | null>(null);
 
   // Debounce search input to prevent excessive re-highlighting
   const debouncedSearch = useDebounce(search, debounce);
@@ -38,19 +28,18 @@ export function useHighlight({
   // Extract callback handlers into effect events to avoid including them in dependencies
   // These always access the latest values without triggering effect re-runs
   const handleHighlightChange = useEffectEvent((count: number) => {
+    setMatchCount(count);
     onHighlightChange?.(count);
   });
 
   const handleError = useEffectEvent((err: Error) => {
+    setError(err);
     onError?.(err);
   });
 
-  // Track pending idle callback to allow cancellation
-  const idleCallbackRef = useRef<number | null>(null);
-
-  // Extract highlight logic into reusable function
-  const performHighlight = useCallback((search?: string | string[]) => {
-    // 1. Validate preconditions - API support
+  // Create controller on mount and when targetRef or support status changes
+  useEffect(() => {
+    // Validate preconditions
     if (!isSupported) {
       const err = new Error("CSS Custom Highlight API is not supported");
       setError(err);
@@ -58,7 +47,6 @@ export function useHighlight({
       return;
     }
 
-    // 2. Validate preconditions - DOM element availability
     if (!targetRef.current) {
       if (process.env.NODE_ENV === "development") {
         console.warn(
@@ -70,59 +58,38 @@ export function useHighlight({
       return;
     }
 
-    // 3. Normalize and validate search terms
-    const searchTerms = normalizeSearchTerms(search || debouncedSearch);
+    // Create vanilla controller with initial options
+    controllerRef.current = createHighlight(targetRef.current, {
+      search: debouncedSearch,
+      highlightName,
+      caseSensitive,
+      wholeWord,
+      maxHighlights,
+      ignoredTags,
+      onHighlightChange: handleHighlightChange,
+      onError: handleError,
+    });
 
-    if (searchTerms.length === 0) {
-      removeHighlight(highlightName, instanceIdRef.current);
-      setMatchCount(0);
-      handleHighlightChange(0);
-      return;
-    }
+    return () => {
+      controllerRef.current?.destroy();
+      controllerRef.current = null;
+    };
+    // Effect events (handleHighlightChange, handleError) are NOT included in deps
+    // They're stable references that always access latest callback values without triggering re-runs
+  }, [targetRef, isSupported]);
 
-    // 4. Schedule highlight operation
-    try {
-      // Cancel any pending highlight operation to prevent race conditions
-      if (idleCallbackRef.current !== null) {
-        cancelIdleCallback(idleCallbackRef.current);
-      }
+  // Sync option changes to controller
+  useEffect(() => {
+    if (!controllerRef.current) return;
 
-      // Use requestIdleCallback for non-blocking execution
-      idleCallbackRef.current = requestIdleCallback(
-        () => {
-          idleCallbackRef.current = null;
-          try {
-            // Find all text matches in the DOM
-            const matches = findTextMatches(
-              targetRef.current!,
-              searchTerms,
-              caseSensitive,
-              wholeWord,
-              maxHighlights,
-              ignoredTags
-            );
-
-            // Register ranges with CSS Custom Highlight API
-            const ranges = matches.map((match) => match.range);
-            instanceIdRef.current = registerHighlight(highlightName, ranges, instanceIdRef.current);
-
-            // Update state and notify listeners
-            setMatchCount(matches.length);
-            setError(null);
-            handleHighlightChange(matches.length);
-          } catch (err) {
-            const error = err instanceof Error ? err : new Error(String(err));
-            setError(error);
-            handleError(error);
-          }
-        },
-        { timeout: 100 }
-      );
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      setError(error);
-      handleError(error);
-    }
+    controllerRef.current.update({
+      search: debouncedSearch,
+      highlightName,
+      caseSensitive,
+      wholeWord,
+      maxHighlights,
+      ignoredTags,
+    });
   }, [
     debouncedSearch,
     highlightName,
@@ -130,27 +97,16 @@ export function useHighlight({
     wholeWord,
     maxHighlights,
     ignoredTags,
-    isSupported,
   ]);
 
-  useEffect(() => {
-    performHighlight(search);
-
-    return () => {
-      // Cancel pending idle callback on cleanup
-      if (idleCallbackRef.current !== null) {
-        cancelIdleCallback(idleCallbackRef.current);
-      }
-      removeHighlight(highlightName, instanceIdRef.current);
-    };
-    // Effect events (handleHighlightChange, handleError) are NOT included in deps
-    // They're stable references that always access latest callback values without triggering re-runs
-  }, [performHighlight, highlightName]);
+  const refresh = useCallback((search?: string | string[]) => {
+    controllerRef.current?.refresh(search);
+  }, []);
 
   return {
     matchCount,
     isSupported,
     error,
-    refresh: performHighlight,
+    refresh,
   };
 }

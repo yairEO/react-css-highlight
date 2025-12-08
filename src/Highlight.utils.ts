@@ -350,7 +350,11 @@ const instanceRanges = new Map<string, Map<symbol, Range[]>>();
  * Register highlights with CSS.highlights API
  * Supports multiple instances sharing the same highlightName
  */
-export function registerHighlight(highlightName: string, ranges: Range[], instanceId?: symbol): symbol {
+export function registerHighlight(
+  highlightName: string,
+  ranges: Range[],
+  instanceId?: symbol
+): symbol {
   if (!isHighlightAPISupported()) {
     return instanceId || Symbol();
   }
@@ -409,5 +413,18 @@ export function removeHighlight(highlightName: string, instanceId?: symbol): voi
  * Normalize search terms to array
  */
 export function normalizeSearchTerms(search: string | string[]): string[] {
-  return [search].flat().filter(t => t?.trim?.());
+  return [search].flat().filter((t) => t?.trim?.());
+}
+
+/**
+ * Check if search is empty (empty string or empty/all-empty array)
+ */
+export function isSearchEmpty(search: string | string[] | undefined): boolean {
+  if (Array.isArray(search)) {
+    return (
+      search.length === 0 ||
+      search.every((term) => !term || term.trim().length === 0)
+    );
+  }
+  return !search || search.trim().length === 0;
 }

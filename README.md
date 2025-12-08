@@ -19,12 +19,14 @@
 
 - 🚀 **Blazing Fast** - No DOM mutiations! Uses `TreeWalker` for efficient DOM traversal (500× faster than naive approaches)
 - 🎯 **Non-Invasive** - Zero impact on your DOM structure or React component tree. The DOM is not mutated.
+- ⚡ **Non-Blocking** - Uses `requestIdleCallback` to prevent UI freezes during search operations
 - 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
 - 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
 - 📦 **Zero Dependencies** - Pure React + Modern Browser APIs
 - 🧩 **Multiple Usage Patterns** - React (ref-based/wrapper/hook) or vanilla JS (framework-agnostic)
 - 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
 - 🔌 **Framework Agnostic** - Use with React, Vue, Svelte, Angular, or vanilla JavaScript
+- 🏗️ **Clean Architecture** - React hook is a thin wrapper around framework-agnostic core
 
 
 ## 📖 Table of Contents
@@ -318,10 +320,10 @@ const { matchCount, isSupported, error } = useHighlight({
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `matchCount` | `number` | Number of matches currently highlighted |
+| `matchCount` | `number` | Number of matches currently highlighted (updates synchronously) |
 | `isSupported` | `boolean` | Whether browser supports CSS Custom Highlight API |
 | `error` | `Error \| null` | Error object if highlighting failed, null otherwise |
-| `refresh` | `() => void` | Manually trigger re-highlighting (useful for dynamic content, virtualized lists, etc.) |
+| `refresh` | `(search?: string \| string[]) => void` | Manually trigger re-highlighting. Optionally pass search term(s) to temporarily highlight different content without updating component state |
 
 ### `Highlight` Component Props
 
@@ -458,8 +460,26 @@ Create custom highlight styles by providing a `highlightName`:
 - **TreeWalker** - Native browser API for efficient DOM traversal
 - **Early Exit** - Stops at `maxHighlights` limit
 - **Empty Node Skipping** - Ignores whitespace-only text nodes
-- **requestIdleCallback** - Non-blocking search execution
+- **requestIdleCallback** - Non-blocking highlight styling to prevent UI freezes
+- **Sync Match Count** - Match counts calculated synchronously, styling applied asynchronously
 - **Performance Monitoring** - Dev-mode warnings for slow searches (>100ms)
+
+### How It Works
+
+The highlighting system uses a two-phase approach for optimal performance:
+
+1. **Synchronous Phase** (immediate):
+   - Calculates match count
+   - Updates state
+   - Calls `onHighlightChange` callback
+   - Returns immediately to keep UI responsive
+
+2. **Asynchronous Phase** (deferred):
+   - Applies visual highlighting using CSS Custom Highlight API
+   - Scheduled via `requestIdleCallback` during browser idle time
+   - Prevents blocking user interactions
+
+This means `matchCount` is always up-to-date immediately, while visual highlights appear shortly after without blocking the main thread.
 
 ### Performance Tips
 
@@ -1051,37 +1071,69 @@ const ref = useRef<HTMLDivElement>(null);
 ### Architecture Overview
 
 ```
+┌───────────────────────────────────────────────────────────┐
+│                    React Layer                            │
+│  useHighlight Hook (React-specific concerns)              │
+│  - State management (matchCount, error, isSupported)      │
+│  - Effect lifecycle & cleanup                             │
+│  - Debouncing user input                                  │
+│  - Callback stability (useEffectEvent)                    │
+└─────────────────────┬─────────────────────────────────────┘
+                      │ Delegates to
+┌─────────────────────▼─────────────────────────────────────┐
+│                   Vanilla Core                            │
+│  createHighlight (Framework-agnostic)                     │
+│  - Input validation & normalization                       │
+│  - DOM traversal & text matching                          │
+│  - CSS Custom Highlight API integration                   │
+│  - Async scheduling (requestIdleCallback)                 │
+│  - Used by React, Vue, Svelte, Angular, etc.             │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Execution Flow
+
+```
 ┌─────────────────────────────────────────────────────┐
 │  1. User provides search terms + targetRef          │
 └──────────────────┬──────────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────────┐
-│  2. Pre-compile regex patterns (once)               │
+│  2. Normalize and validate input                    │
+│     - Trim whitespace, filter empty strings         │
+│     - Pre-compile regex patterns (once)             │
 │     - Escape special characters                     │
-│     - Add word boundaries if needed                 │
-│     - Validate patterns                             │
 └──────────────────┬──────────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────────┐
-│  3. TreeWalker traverses DOM text nodes             │
+│  3. TreeWalker traverses DOM text nodes [SYNC]      │
 │     - Skip SCRIPT, STYLE, empty nodes               │
 │     - Process only TEXT_NODE types                  │
+│     - Calculate match count immediately             │
 └──────────────────┬──────────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────────┐
-│  4. Create Range objects for each match             │
+│  4. Create Range objects for matches [SYNC]         │
 │     - Calculate start/end offsets                   │
-│     - Handle multi-node matches                     │
+│     - Store ranges in array                         │
+│     - Update matchCount & call onChange             │
 └──────────────────┬──────────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────────┐
-│  5. Register with CSS.highlights API                │
+│  5. Schedule visual update [ASYNC]                  │
+│     - requestIdleCallback queues update             │
+│     - Waits for browser idle time                   │
+│     - Non-blocking, cancellable                     │
+└──────────────────┬──────────────────────────────────┘
+                   │ (when browser is idle)
+┌──────────────────▼──────────────────────────────────┐
+│  6. Register with CSS.highlights API [ASYNC]        │
 │     - Create Highlight(...ranges)                   │
 │     - CSS.highlights.set(name, highlight)           │
 └──────────────────┬──────────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────────┐
-│  6. Browser applies ::highlight() CSS styles        │
+│  7. Browser applies ::highlight() CSS styles        │
 │     - Non-invasive (no DOM mutation)                │
 │     - Hardware accelerated                          │
 └─────────────────────────────────────────────────────┘

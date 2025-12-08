@@ -173,9 +173,25 @@ import { isHighlightAPISupported } from 'react-css-highlight/vanilla';
 if (!isHighlightAPISupported()) {
   console.warn('CSS Custom Highlight API not supported');
 }
+`Low-level utilities for advanced use cases:
+
+```javascript
+import {
+  isHighlightAPISupported,  // Check browser support
+  findTextMatches,          // Find matches in DOM
+  registerHighlight,        // Register with CSS.highlights
+  removeHighlight,          // Remove from CSS.highlights
+  normalizeSearchTerms,     // Normalize search input
+  DEFAULT_MAX_HIGHLIGHTS,   // Default: 1000
+  IGNORED_TAG_NAMES,        // Default ignored HTML tags
+} from 'react-css-highlight/vanilla';
+
+// Type exports for advanced usage
+import type {
+  HighlightMatch,           // Match result type (used with findTextMatches)
+  HighlightOptions,         // Controller options type
+  HighlightController       // Controller interface
+} from 'react-css-highlight/vanilla';
 ```
 
-## Full Documentation
-
-See the [main README](../../README.md) for complete documentation, styling guide, and advanced examples.
-
+> **Note:** Most users don't need these utilities directly. Use `createHighlight()` for the recommended high-level API. These are exported for framework integrations and advanced customization.
