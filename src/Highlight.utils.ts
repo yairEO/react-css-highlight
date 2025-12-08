@@ -415,16 +415,3 @@ export function removeHighlight(highlightName: string, instanceId?: symbol): voi
 export function normalizeSearchTerms(search: string | string[]): string[] {
   return [search].flat().filter((t) => t?.trim?.());
 }
-
-/**
- * Check if search is empty (empty string or empty/all-empty array)
- */
-export function isSearchEmpty(search: string | string[] | undefined): boolean {
-  if (Array.isArray(search)) {
-    return (
-      search.length === 0 ||
-      search.every((term) => !term || term.trim().length === 0)
-    );
-  }
-  return !search || search.trim().length === 0;
-}

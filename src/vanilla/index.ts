@@ -22,7 +22,6 @@
 import {
   findTextMatches,
   isHighlightAPISupported,
-  isSearchEmpty,
   normalizeSearchTerms,
   registerHighlight,
   removeHighlight,
@@ -41,7 +40,6 @@ export type { HighlightMatch } from "../Highlight.types";
 export {
   findTextMatches,
   isHighlightAPISupported,
-  isSearchEmpty,
   normalizeSearchTerms,
   registerHighlight,
   removeHighlight,
@@ -185,10 +183,6 @@ export function createHighlight(
     throw new Error("createHighlight: options parameter is required");
   }
 
-  if (isSearchEmpty(options.search)) {
-    return DEFAULT_RETURN;
-  }
-
   // Validate search - must be non-empty string or non-empty array
   const normalizedSearch = Array.isArray(options.search)
     ? options.search.filter((t) => t && t.trim().length > 0)
@@ -304,28 +298,6 @@ export function createHighlight(
     },
 
     update(newOptions: Partial<HighlightOptions>) {
-      if (isSearchEmpty(newOptions.search)) {
-        return DEFAULT_RETURN;
-      }
-      // Validate search if provided (allow empty array to clear highlights)
-      if (newOptions.search !== undefined) {
-        if (Array.isArray(newOptions.search)) {
-          // Empty array is valid (clears highlights)
-          const hasValidTerms = newOptions.search.some(
-            (t) => t && t.trim().length > 0
-          );
-          if (newOptions.search.length > 0 && !hasValidTerms) {
-            throw new Error(
-              "createHighlight.update: options.search array contains only empty strings"
-            );
-          }
-        } else if (!newOptions.search || !newOptions.search.trim()) {
-          throw new Error(
-            "createHighlight.update: options.search cannot be an empty string"
-          );
-        }
-      }
-
       // Remove old highlight if name changed
       if (
         newOptions.highlightName &&
