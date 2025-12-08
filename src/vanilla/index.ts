@@ -183,17 +183,6 @@ export function createHighlight(
     throw new Error("createHighlight: options parameter is required");
   }
 
-  // Validate search - must be non-empty string or non-empty array
-  const normalizedSearch = Array.isArray(options.search)
-    ? options.search.filter((t) => t && t.trim().length > 0)
-    : [options.search].filter((t) => t && t.trim().length > 0);
-
-  if (normalizedSearch.length === 0) {
-    throw new Error(
-      "createHighlight: options.search must be a non-empty string or array with at least one non-empty string"
-    );
-  }
-
   if (!isHighlightAPISupported()) {
     const error = new Error(
       "CSS Custom Highlight API is not supported in this browser"
