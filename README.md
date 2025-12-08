@@ -252,10 +252,10 @@ function CustomHighlightComponent() {
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `matchCount` | `number` | Number of highlighted matches found |
-| `isSupported` | `boolean` | Whether the browser supports CSS Custom Highlight API |
-| `error` | `Error \| null` | Error object if highlighting failed, null otherwise |
-| `refresh` | `() => void` | Manually trigger re-highlighting (useful for dynamic content) |
+| `matchCount`  | `number`          | Number of highlighted matches found
+| `isSupported` | `boolean`         | Whether the browser supports CSS Custom Highlight API
+| `error`       | `Error \| null`   | Error object if highlighting failed, null otherwise
+| `refresh`     | `(search?: string | string[]) => void` | Manually trigger re-highlighting (useful for dynamic content) with optional new search term(s) to highlight
 
 **When to use the hook vs component:**
 

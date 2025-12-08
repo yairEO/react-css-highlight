@@ -49,7 +49,7 @@ export function useHighlight({
   const idleCallbackRef = useRef<number | null>(null);
 
   // Extract highlight logic into reusable function
-  const performHighlight = useCallback(() => {
+  const performHighlight = useCallback((search?: string | string[]) => {
     // 1. Validate preconditions - API support
     if (!isSupported) {
       const err = new Error("CSS Custom Highlight API is not supported");
@@ -71,7 +71,7 @@ export function useHighlight({
     }
 
     // 3. Normalize and validate search terms
-    const searchTerms = normalizeSearchTerms(debouncedSearch);
+    const searchTerms = normalizeSearchTerms(search || debouncedSearch);
 
     if (searchTerms.length === 0) {
       removeHighlight(highlightName, instanceIdRef.current);
@@ -134,7 +134,7 @@ export function useHighlight({
   ]);
 
   useEffect(() => {
-    performHighlight();
+    performHighlight(search);
 
     return () => {
       // Cancel pending idle callback on cleanup

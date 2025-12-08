@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useHighlight } from "../src/Highlight.hooks";
 import { ReactEcosystemContent, SystemLogContent } from "./content";
@@ -73,6 +73,10 @@ export const InteractiveSearch: Story = {
       debounce: 300,
     });
 
+    const onRefresh = useCallback(() => {
+      refresh();
+    }, [refresh, searchTerm]);
+
     return (
       <div style={{ maxWidth: 600 }}>
         <div
@@ -115,7 +119,7 @@ export const InteractiveSearch: Story = {
               />
               Whole word
             </label>
-            <button onClick={refresh} style={{ marginLeft: "auto", padding: "8px 16px", borderRadius: "4px", backgroundColor: "#007bff", color: "#fff", border: "none", cursor: "pointer" }}>Refresh</button>
+            <button onClick={onRefresh} style={{ marginLeft: "auto", padding: "8px 16px", borderRadius: "4px", backgroundColor: "#007bff", color: "#fff", border: "none", cursor: "pointer" }}>Refresh</button>
           </div>
 
           <div

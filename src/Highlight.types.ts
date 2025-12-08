@@ -92,7 +92,7 @@ export interface UseHighlightResult {
    * }, [visibleRows, refresh]);
    * ```
    */
-  refresh: () => void;
+  refresh: (search?: string | string[]) => void;
 }
 
 /**
