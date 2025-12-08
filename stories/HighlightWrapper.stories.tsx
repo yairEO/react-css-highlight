@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {HighlightWrapper} from "../src";
 import "../src/Highlight.css";
 import { AboutHighlightWrapperContent } from "./content";

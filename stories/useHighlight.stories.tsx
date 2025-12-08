@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useHighlight } from "../src/Highlight.hooks";
 import { ReactEcosystemContent, SystemLogContent } from "./content";
 import "../src/Highlight.css";
