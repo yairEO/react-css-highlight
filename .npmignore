@@ -1,16 +1,21 @@
-# Exclude Storybook config
-.storybook
+# Source files (publishing dist/ only)
+src/
+stories/
+examples/
+.storybook/
 
-# Exclude all story files (adjust pattern if needed)
-src/**/*.stories.js
-src/**/*.stories.jsx
-src/**/*.stories.ts
-src/**/*.stories.tsx
+# Config files
+tsconfig.json
+tsup.config.ts
+biome.json
+.husky/
+.lintstagedrc.json
 
-# Exclude the static Storybook build output
-storybook-static
+# Development
+*.log
+*.tsbuildinfo
+node_modules/
 
-# Exclude GitHub Actions workflows
-.github
-
-.cursor
+# Git
+.git/
+.gitignore

@@ -69,3 +69,7 @@ Temporary Items
 storybook-static
 
 .cursor
+
+# Build output
+dist/
+*.tsbuildinfo
