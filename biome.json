@@ -27,7 +27,7 @@
     "bracketSpacing": true,
     "expand": "auto",
     "useEditorconfig": true,
-    "includes": ["frontend/**/*"]
+    "includes": ["src/**/*"]
   },
   "linter": {
     "enabled": true,
@@ -92,7 +92,7 @@
       },
       "a11y": "off"
     },
-    "includes": ["frontend/**/*"]
+    "includes": ["src/**/*"]
   },
   "javascript": {
     "formatter": {
