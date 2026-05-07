@@ -68,17 +68,17 @@
     "react": "^19.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.5",
-    "@storybook/react-vite": "^10.1.4",
-    "@types/react": "^19.2.4",
+    "@biomejs/biome": "2.4.14",
+    "@storybook/react-vite": "^10.3.6",
+    "@types/react": "^19.2.14",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.6",
-    "np": "^10.2.0",
+    "lint-staged": "^17.0.2",
+    "np": "^11.2.0",
     "prop-types": "^15.8.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "storybook": "^10.1.4",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "storybook": "^10.3.6",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }

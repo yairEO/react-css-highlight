@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.5/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -34,15 +34,14 @@
     "rules": {
       "recommended": true,
       "nursery": {
-        "noReactForwardRef": "warn",
-        "noUnresolvedImports": "off",
-        "noFloatingPromises": "warn",
-        "noImportCycles": "error"
+        "noFloatingPromises": "warn"
       },
       "performance": {
         "noAccumulatingSpread": "warn"
       },
       "suspicious": {
+        "noImportCycles": "error",
+        "noReactForwardRef": "warn",
         "useIterableCallbackReturn": "warn",
         "noUnknownAtRules": "off",
         "noAssignInExpressions": "warn",
@@ -58,6 +57,7 @@
         }
       },
       "correctness": {
+        "noUnresolvedImports": "off",
         "noNestedComponentDefinitions": "off",
         "useUniqueElementIds": "off",
         "noSelfAssign": "error",
