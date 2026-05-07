@@ -25,7 +25,7 @@ import {
 } from "../shared/options";
 import { createHighlightTarget } from "../shared/target";
 import type { WithDefaults } from "../shared/types";
-import { positionalDiff } from "./diff";
+import { positionalDiffFn } from "./diff";
 import { mapDiffToRanges } from "./rangeMapper";
 import type {
   CompareController,
@@ -58,6 +58,7 @@ function toResolvedCompare(o: CompareOptions): WithDefaults<CompareOptions> {
       o.compareHighlightName ?? DEFAULT_COMPARE_COMPARE_HIGHLIGHT,
     onDiffChange: o.onDiffChange ?? (() => {}),
     onPaint: o.onPaint,
+    diff: o.diff ?? positionalDiffFn,
   } as WithDefaults<CompareOptions>;
 }
 
@@ -161,10 +162,11 @@ export function createCompareHighlight(
         return;
       }
 
-      const { ranges, diffCount: count } = positionalDiff(
-        baseMap.text,
-        compareMap.text
-      );
+      const {
+        baseRanges: baseDiffRanges,
+        compareRanges: compareDiffRanges,
+        diffCount: count,
+      } = current.diff(baseMap.text, compareMap.text);
       diffCount = count;
       current.onDiffChange(diffCount);
 
@@ -179,8 +181,8 @@ export function createCompareHighlight(
         return;
       }
 
-      const baseRanges = mapDiffToRanges(ranges, baseMap);
-      const compareRanges = mapDiffToRanges(ranges, compareMap);
+      const baseRanges = mapDiffToRanges(baseDiffRanges, baseMap);
+      const compareRanges = mapDiffToRanges(compareDiffRanges, compareMap);
 
       core.scheduler.schedule(() => {
         if (core.destroyed) return;

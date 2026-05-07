@@ -7,9 +7,13 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![CSS Highlight API](https://img.shields.io/badge/CSS-Highlights%20API-ff69b4?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API)
 
-<img src="https://github.com/user-attachments/assets/ac19c4cb-ae11-4090-ba65-0300f67f198f" />
+<o align="center">
+<kbd>
+<img src="./react-css-highlight.apng"/>
+</kbd>
+</p>
 
-## 🎮 Live Demos
+## Live Demos
 
 - **[Vanilla JS Demo](https://yaireo.github.io/react-css-highlight/vanilla-demo/)** - Pure JavaScript implementation (no framework)
 - **[React Storybook](https://yaireo.github.io/react-css-highlight/)** - Interactive examples with all features
@@ -17,17 +21,17 @@
 
 ## ✨ Features
 
-- 🚀 **Blazing Fast** - No DOM mutiations! Uses `TreeWalker` for efficient DOM traversal (500× faster than naive approaches)
-- 🎯 **Non-Invasive** - Zero impact on your DOM structure or React component tree. The DOM is not mutated.
-- ⚡ **Non-Blocking** - Uses `requestIdleCallback` to prevent UI freezes during search operations
-- 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
-- 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
-- 🧭 **Positional compare (markup-agnostic)** — `createCompareHighlight` diffs **flattened text** (every `#text` node under a root, in tree order). **How you wrap words in elements does not change the compared string**—only the actual characters do. Mismatches paint via the CSS Highlight API (`Range`s on those text nodes, `::highlight()` styles), not by injecting `<mark>` or forcing both sides to share the same HTML shape (vanilla / framework-agnostic)
-- 📦 **Zero Dependencies** - Pure React + Modern Browser APIs
-- 🧩 **Multiple Usage Patterns** - React (ref-based/wrapper/hook) or vanilla JS (framework-agnostic)
-- 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
-- 🔌 **Framework Agnostic** - Use with React, Vue, Svelte, Angular, or vanilla JavaScript
-- 🏗️ **Clean Architecture** - React hook is a thin wrapper around framework-agnostic core
+- **Blazing Fast** - No DOM mutiations! Uses `TreeWalker` for efficient DOM traversal (500× faster than naive approaches)
+- **Non-Invasive** - Zero impact on your DOM structure or React component tree. The DOM is not mutated.
+- **Non-Blocking** - Uses `requestIdleCallback` to prevent UI freezes during search operations
+- **Fully Customizable** - Control highlights colors with simple CSS variables
+- **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
+- **Positional compare (markup-agnostic)** — `createCompareHighlight` diffs **flattened text** (every `#text` node under a root, in tree order). **How you wrap words in elements does not change the compared string**—only the actual characters do. Mismatches paint via the CSS Highlight API (`Range`s on those text nodes, `::highlight()` styles), not by injecting `<mark>` or forcing both sides to share the same HTML shape (vanilla / framework-agnostic)
+- **Zero Dependencies** - Pure React + Modern Browser APIs
+- **Multiple Usage Patterns** - React (ref-based/wrapper/hook) or vanilla JS (framework-agnostic)
+- **TypeScript First** - Full type safety with extensive JSDoc documentation
+- **Framework Agnostic** - Use with React, Vue, Svelte, Angular, or vanilla JavaScript
+- **Clean Architecture** - React hook is a thin wrapper around framework-agnostic core
 
 
 ## 📖 Table of Contents
@@ -331,7 +335,7 @@ liveEl.addEventListener("input", () => ctrl.refresh());
 
 Behavior notes:
 
-- **Positional**, not Myers/LCS alignment: inserting text in one side shifts subsequent indices, so downstream regions may appear as entirely different unless strings stay the same length and prefix-identical where you care about alignment.
+- **Positional by default**, not Myers/LCS alignment: inserting text in one side shifts subsequent indices, so downstream regions may appear as entirely different unless strings stay the same length and prefix-identical where you care about alignment. Pass a custom [`diff` option](#custom-diff-algorithms-lcs--myers--word-line-level) to switch to edit-script alignment.
 - **Whitespace counts:** flattened text includes all text nodes (including whitespace-only) so offsets stay stable.
 - **String-side gotchas:** browser `textContent` normalizes line endings to `\n`. A Windows-style reference string like `"foo\r\nbar"` will show a positional diff for every `\r` when compared to equivalent DOM text — strip `\r` from your reference first. `<br>` elements contribute no characters to `textContent`; if your reference string uses `\n` where the DOM uses `<br>`, every newline is a diff — align formatting (e.g. match line breaks) or strip newlines from the string.
 - **Timing:** Diff count updates **synchronously**; painting registers with `CSS.highlights` inside `requestIdleCallback` when at least one side is a DOM tree (same pattern as `createHighlight`). If **both** sides are strings, only the diff runs — no highlight registration is scheduled.
@@ -446,8 +450,9 @@ Types: **`CompareInput`** = `HTMLElement | string`; **`CompareSource`** — reso
 | `baseHighlightName` | `string` | `"highlight-diff-base"` | `::highlight()` name for mismatches mapped into the base side (ignored when base is a string) |
 | `compareHighlightName` | `string` | `"highlight-diff-compare"` | `::highlight()` name for mismatches mapped into the compare side (ignored when compare is a string) |
 | `ignoredTags` | `string[]` | (none extra) | Merged with built-in ignored tags; text under these parent tag names is skipped when flattening **element** sides only |
-| `onDiffChange` | `(diffCount: number) => void` | — | Runs **after** each compare — `diffCount` is the number of **differing character positions**, not contiguous ranges |
+| `onDiffChange` | `(diffCount: number) => void` | — | Runs **after** each compare. Default unit = differing **character positions** (not contiguous ranges). With a custom `diff`, the unit is whatever your `DiffFn` returns. |
 | `onError` | `(error: Error) => void` | — | Error handler |
+| `diff` | `DiffFn` | `positionalDiffFn` | Pluggable diff. Override to use edit-script algorithms (LCS / Myers / Patience / Histogram) at any granularity. See [Custom diff algorithms](#custom-diff-algorithms-lcs--myers--word-line-level). |
 
 **`CompareController`**
 
@@ -461,13 +466,106 @@ Types: **`CompareInput`** = `HTMLElement | string`; **`CompareSource`** — reso
 
 If the browser does not support the CSS Custom Highlight API, `createCompareHighlight` returns a no-op controller and invokes `onError` when supplied. `base` and `compare` must be defined (not `null` / `undefined`); each must be a string or a valid `HTMLElement` (non-element values throw `INVALID_INPUT`). To change which element or string is compared after construction, `destroy()` the controller and create a new one.
 
+### Custom diff algorithms (LCS / Myers / word-line level)
+
+The default positional diff is great for typing-tutor style "did the user type the same characters?" UX, but breaks down for prose / code where a single insertion shifts every downstream index. Pass a custom `diff` function to swap in any edit-script algorithm at any granularity (char / word / line / token).
+
+**Signatures:**
+
+```ts
+import type { DiffFn, CustomDiffResult, DiffRange } from "react-css-highlight";
+
+type DiffRange = { start: number; end: number }; // half-open [start, end)
+
+interface CustomDiffResult {
+  baseRanges: DiffRange[];     // flat-text offsets into baseText (deletions live here)
+  compareRanges: DiffRange[];  // flat-text offsets into compareText (insertions live here)
+  diffCount: number;           // opaque to controller — emitted via onDiffChange
+}
+
+type DiffFn = (baseText: string, compareText: string) => CustomDiffResult;
+```
+
+**Contract:**
+
+- Synchronous only. Throwing routes through `onError` and clears highlights.
+- Out-of-bound ranges are clipped to each side's flat-text length by the range mapper, so off-by-one bugs degrade gracefully instead of crashing.
+- Equal substrings should land in **neither** side's ranges. Edit-script algorithms naturally produce this: `equal` ops are skipped, `delete` ops add to `baseRanges`, `insert` ops add to `compareRanges`, `replace` ops add to both.
+- `diffCount` is whatever you say it is — pick a unit that means something to your callers (positions, edit ops, hunks, words changed, …) and document it.
+
+**Example: word-level diff via [`fast-diff`](https://github.com/jhchen/fast-diff):**
+
+```js
+import { createCompareHighlight, type DiffFn } from "react-css-highlight/vanilla";
+import diff from "fast-diff";
+import "react-css-highlight/styles";
+
+const wordDiff: DiffFn = (baseText, compareText) => {
+  const ops = diff(baseText, compareText); // [op, str][] where op ∈ {-1, 0, 1}
+
+  const baseRanges = [];
+  const compareRanges = [];
+  let bi = 0;
+  let ci = 0;
+  let editOps = 0;
+
+  for (const [op, str] of ops) {
+    const len = str.length;
+    if (op === diff.EQUAL) {
+      bi += len;
+      ci += len;
+    } else if (op === diff.DELETE) {
+      baseRanges.push({ start: bi, end: bi + len });
+      bi += len;
+      editOps++;
+    } else {
+      compareRanges.push({ start: ci, end: ci + len });
+      ci += len;
+      editOps++;
+    }
+  }
+
+  return { baseRanges, compareRanges, diffCount: editOps };
+};
+
+const ctrl = createCompareHighlight(baseEl, compareEl, {
+  diff: wordDiff,
+  onDiffChange(count) {
+    console.log("Edit operations:", count);
+  },
+});
+```
+
+**Replacing the diff later:**
+
+```js
+import { positionalDiffFn } from "react-css-highlight/vanilla";
+
+ctrl.update({ diff: wordDiff });          // triggers recompute
+ctrl.update({ diff: positionalDiffFn });  // back to positional default
+```
+
+> `update()` strips `undefined` values, so passing `diff: undefined` is a no-op. To revert to positional, pass the exported `positionalDiffFn` explicitly.
+
+**Hybrid strategy** — positional for short inputs, edit-script for long:
+
+```js
+import { positionalDiffFn } from "react-css-highlight/vanilla";
+
+const hybrid: DiffFn = (a, b) =>
+  Math.max(a.length, b.length) < 200 ? positionalDiffFn(a, b) : wordDiff(a, b);
+```
+
+**Granularity tip:** `fast-diff`, `diff-match-patch`, etc. work at character level. To get word- or line-level alignment, tokenize first, run the algorithm on the token sequence, then rehydrate token boundaries back into character offsets when building `DiffRange[]`. The library doesn't ship tokenizers — bring your own (or accept char-level alignment, which is usually fine).
+
 ### Advanced comparison helpers
 
 For custom integrations, the same functions used internally are exported from `"react-css-highlight"` and `"react-css-highlight/vanilla"`:
 
 - `buildTextMap(element, ignoredTags?)` — flatten descendant text to a string plus per–text-node spans (includes whitespace-only nodes).
 - `positionalDiff(baseText, compareText)` — pure string positional diff; returns grouped ranges and `diffCount`.
-- `mapDiffToRanges(diffRanges, textMap)` — turn flat ranges into `Range[]` clipped to the map’s length.
+- `positionalDiffFn(baseText, compareText)` — same as `positionalDiff` adapted to the `DiffFn` shape (`{ baseRanges, compareRanges, diffCount }`); used as the default when no custom `diff` is supplied. Re-export it inside hybrid `DiffFn`s to fall back to positional on short strings.
+- `mapDiffToRanges(diffRanges, textMap)` — turn flat ranges into `Range[]` clipped to the map's length.
 
 ## 🎨 Styling
 
@@ -563,7 +661,62 @@ Create custom highlight styles by providing a `highlightName`:
 }
 ```
 
-For string comparison, override the built-in diff names or variables:
+### Customizing String Comparison Colors
+
+`createCompareHighlight` accepts `baseHighlightName` and `compareHighlightName` — same `::highlight()` name mechanism as the search component, applied to each side independently. Three ways to change the colors, pick whichever fits your style system:
+
+#### Option 1 — Reuse a built-in variant
+
+The pre-defined variants from the [previous section](#pre-defined-style-variants) (`highlight-primary`, `highlight-secondary`, `highlight-success`, `highlight-warning`, `highlight-error`, `highlight-active`) are valid `::highlight()` names. Point each side at the variant you want — zero CSS needed because `Highlight.css` already ships those rules.
+
+```js
+import { createCompareHighlight } from "react-css-highlight/vanilla";
+import "react-css-highlight/styles";
+
+createCompareHighlight(val1Ref.current, val2Ref.current, {
+  baseHighlightName: "highlight-primary",     // yellow on the reference side
+  compareHighlightName: "highlight-secondary", // sky blue on the modified side
+});
+```
+
+#### Option 2 — Custom name + custom CSS
+
+Pass any string. You're now responsible for defining a matching `::highlight(...)` rule somewhere in your stylesheet.
+
+```js
+createCompareHighlight(val1Ref.current, val2Ref.current, {
+  baseHighlightName: "highlight-foo",
+  compareHighlightName: "highlight-bar",
+});
+```
+
+```css
+::highlight(highlight-foo) {
+  background-color: LightSalmon;
+  color: inherit;
+}
+
+::highlight(highlight-bar) {
+  background-color: PaleGreen;
+  color: inherit;
+  text-decoration: underline; /* ⚠️ unsupported in Firefox */
+}
+```
+
+> The names don't need a `highlight-` prefix — `::highlight(my-diff-left)` works just as well. The prefix is only a convention used by the bundled stylesheet.
+
+#### Option 3 — Keep default names, override CSS variables
+
+Cheapest path if the only thing you want to change is the colors. Leaves `baseHighlightName` / `compareHighlightName` at their defaults (`highlight-diff-base` / `highlight-diff-compare`) and re-themes via custom properties:
+
+```css
+:root {
+  --highlight-diff-base: #fde68a;    /* warm yellow on the reference side */
+  --highlight-diff-compare: #c7d2fe; /* indigo on the modified side */
+}
+```
+
+Or replace the rules entirely:
 
 ```css
 ::highlight(highlight-diff-base) {
@@ -575,6 +728,17 @@ For string comparison, override the built-in diff names or variables:
   background-color: var(--highlight-diff-compare, #bbf7d0);
   color: inherit;
 }
+```
+
+#### Live updates
+
+Changing names after construction is supported — the controller re-registers under the new names on the next compute cycle:
+
+```js
+ctrl.update({
+  baseHighlightName: "highlight-warning",
+  compareHighlightName: "highlight-success",
+});
 ```
 
 ## ⚡ Performance

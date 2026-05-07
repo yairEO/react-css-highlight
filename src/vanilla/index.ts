@@ -5,12 +5,15 @@
 export {
   createCompareHighlight,
   positionalDiff,
+  positionalDiffFn,
 } from "../compare";
 export type {
   CompareController,
   CompareInput,
   CompareOptions,
   CompareSource,
+  CustomDiffResult,
+  DiffFn,
   DiffRange,
   PositionalDiffResult,
 } from "../compare/types";

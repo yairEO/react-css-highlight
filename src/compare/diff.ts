@@ -1,4 +1,9 @@
-import type { DiffRange, PositionalDiffResult } from "./types";
+import type {
+  CustomDiffResult,
+  DiffFn,
+  DiffRange,
+  PositionalDiffResult,
+} from "./types";
 
 /*
  * Surrogate safety (UTF-16):
@@ -153,3 +158,19 @@ export function positionalDiff(
 
   return { ranges, diffCount: count };
 }
+
+/**
+ * Default {@link DiffFn} — wraps {@link positionalDiff} into the per-side
+ * `CustomDiffResult` shape used by the controller. Both sides reuse the same
+ * ranges because flat offsets align (positional alignment).
+ *
+ * Exported for users wanting to fall back to positional inside their own
+ * `DiffFn` (e.g. positional for short strings, LCS for long).
+ */
+export const positionalDiffFn: DiffFn = (
+  baseText: string,
+  compareText: string
+): CustomDiffResult => {
+  const { ranges, diffCount } = positionalDiff(baseText, compareText);
+  return { baseRanges: ranges, compareRanges: ranges, diffCount };
+};

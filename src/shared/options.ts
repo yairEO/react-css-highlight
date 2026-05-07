@@ -53,7 +53,7 @@ export const HIGHLIGHT_RECOMPUTE_KEYS = [
 ] as const;
 
 /** Compare controller */
-export const COMPARE_RECOMPUTE_KEYS = ["ignoredTags", "debounce"] as const;
+export const COMPARE_RECOMPUTE_KEYS = ["ignoredTags", "debounce", "diff"] as const;
 export const COMPARE_NAME_KEYS = [
   "baseHighlightName",
   "compareHighlightName",

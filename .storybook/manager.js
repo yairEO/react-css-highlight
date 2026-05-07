@@ -2,6 +2,8 @@ import { addons } from 'storybook/manager-api';
 import { create } from 'storybook/theming';
 
 addons.setConfig({
+  // Layout (not theme): must be top-level on setConfig, not inside create()
+  navSize: 500,
   theme: create({
     base: 'light',
     brandTitle: '⚛️ React-CSS-Highlight',

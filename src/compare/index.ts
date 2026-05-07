@@ -1,9 +1,11 @@
 export { createCompareHighlight } from "./controller";
-export { positionalDiff } from "./diff";
+export { positionalDiff, positionalDiffFn } from "./diff";
 export type {
   CompareController,
   CompareOptions,
   CompareSource,
+  CustomDiffResult,
+  DiffFn,
   DiffRange,
   PositionalDiffResult,
 } from "./types";
