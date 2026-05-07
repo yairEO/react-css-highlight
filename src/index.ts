@@ -1,5 +1,7 @@
 // Main component with ref-based API (default export for power users)
 
+import "./Highlight.css";
+
 export { createCompareHighlight, positionalDiff } from "./compare";
 export type {
   CompareController,

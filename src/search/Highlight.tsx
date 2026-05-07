@@ -1,6 +1,5 @@
 import type { HighlightProps } from "./reactTypes";
 import { useHighlight } from "./useHighlight";
-import "../Highlight.css";
 
 export { useHighlight } from "./useHighlight";
 
