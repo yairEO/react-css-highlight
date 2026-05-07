@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
 import { DEFAULT_DEBOUNCE_MS, DEFAULT_MAX_HIGHLIGHTS } from "../shared/constants";
 import { isHighlightAPISupported } from "../shared/cssHighlights";
-import { createHighlight, type HighlightController } from "./create";
+import { createHighlight } from "./create";
 import type { HighlightProps, UseHighlightResult } from "./reactTypes";
+import type { HighlightController } from "./types";
 import { useDebounce } from "./useDebounce";
 
 export function useHighlight({

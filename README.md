@@ -22,7 +22,7 @@
 - ⚡ **Non-Blocking** - Uses `requestIdleCallback` to prevent UI freezes during search operations
 - 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
 - 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
-- 🧭 **Positional string compare** - Highlight character-level differences between two DOM trees (via `createCompareHighlight`; vanilla / framework-agnostic)
+- 🧭 **Positional string compare** — Character-level differences between two DOM subtrees **or** a string vs subtree (via `createCompareHighlight`; vanilla / framework-agnostic)
 - 📦 **Zero Dependencies** - Pure React + Modern Browser APIs
 - 🧩 **Multiple Usage Patterns** - React (ref-based/wrapper/hook) or vanilla JS (framework-agnostic)
 - 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
@@ -284,7 +284,7 @@ This library also provides a framework-agnostic API for use with Vue, Svelte, An
 
 ### String comparison (positional diff)
 
-Compare two elements’ **flattened text** character-by-character at each index (UTF-16 code units, aligned with concatenated text nodes). Mismatched characters and tails when lengths differ show as highlights on **both** sides: default names `highlight-diff-base` (reference) and `highlight-diff-compare` (modified). No DOM markup is injected; styling uses the same [CSS Custom Highlight API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API) as search highlights.
+Compare two sides’ **flattened text** character-by-character at each index (UTF-16 code units, aligned with concatenated text nodes). Each side can be an `HTMLElement` **or** a plain `string` (expected text / reference without a rendered node). Mismatched characters and tails when lengths differ show as highlights on **DOM** sides only (string sides have no `Range` to paint). When both sides are elements, default names are `highlight-diff-base` (reference) and `highlight-diff-compare` (modified). No DOM markup is injected; styling uses the same [CSS Custom Highlight API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API) as search highlights.
 
 **Import once:** include styles so `::highlight(highlight-diff-base)` / `::highlight(highlight-diff-compare)` apply (for example `import "react-css-highlight/dist/Highlight.css"` or `import "react-css-highlight/styles"`).
 
@@ -311,11 +311,28 @@ ctrl.refresh();
 ctrl.destroy();
 ```
 
+Compare a fixed reference string to a live element (highlights only the element):
+
+```js
+const expected = "Hello, world";
+const liveEl = document.getElementById("live");
+if (!liveEl) throw new Error("Missing #live");
+
+const ctrl = createCompareHighlight(expected, liveEl, {
+  onDiffChange(count) {
+    console.log("Differing character positions:", count);
+  },
+});
+
+liveEl.addEventListener("input", () => ctrl.refresh());
+```
+
 Behavior notes:
 
 - **Positional**, not Myers/LCS alignment: inserting text in one side shifts subsequent indices, so downstream regions may appear as entirely different unless strings stay the same length and prefix-identical where you care about alignment.
 - **Whitespace counts:** flattened text includes all text nodes (including whitespace-only) so offsets stay stable.
-- **Timing:** Diff count updates **synchronously**; painting registers with `CSS.highlights` inside `requestIdleCallback` (same pattern as `createHighlight`).
+- **String-side gotchas:** browser `textContent` normalizes line endings to `\n`. A Windows-style reference string like `"foo\r\nbar"` will show a positional diff for every `\r` when compared to equivalent DOM text — strip `\r` from your reference first. `<br>` elements contribute no characters to `textContent`; if your reference string uses `\n` where the DOM uses `<br>`, every newline is a diff — align formatting (e.g. match line breaks) or strip newlines from the string.
+- **Timing:** Diff count updates **synchronously**; painting registers with `CSS.highlights` inside `requestIdleCallback` when at least one side is a DOM tree (same pattern as `createHighlight`). If **both** sides are strings, only the diff runs — no highlight registration is scheduled.
 
 **Live example:** [Vanilla JS Demo](https://yaireo.github.io/react-css-highlight/vanilla-demo/) includes an interactive string-comparison block.
 
@@ -408,23 +425,25 @@ import {
 
 ### `createCompareHighlight` (string comparison)
 
-Framework-agnostic API for **positional** diff highlighting between two `HTMLElement`s. Also exported from `"react-css-highlight"` root for reuse in bundlers alongside React.
+Framework-agnostic API for **positional** diff highlighting. Each argument is `HTMLElement | string`: use a string when you don’t have a rendered reference tree (only DOM sides paint). Also exported from `"react-css-highlight"` root for reuse in bundlers alongside React.
 
 **Signature:**
 
 ```ts
 createCompareHighlight(
-  baseElement: HTMLElement,
-  compareElement: HTMLElement,
+  base: HTMLElement | string,
+  compare: HTMLElement | string,
   options?: CompareOptions
 ): CompareController
 ```
 
+Types: **`CompareInput`** = `HTMLElement | string`; **`CompareSource`** — resolved `{ kind: 'element'; element } | { kind: 'text'; text }`; read **`controller.sources`** (same object reference across reads).
+
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `baseHighlightName` | `string` | `"highlight-diff-base"` | `::highlight()` name for mismatches mapped into the base element |
-| `compareHighlightName` | `string` | `"highlight-diff-compare"` | `::highlight()` name for mismatches mapped into the compare element |
-| `ignoredTags` | `string[]` | (none extra) | Merged with built-in ignored tags; text under these parent tag names is skipped when flattening |
+| `baseHighlightName` | `string` | `"highlight-diff-base"` | `::highlight()` name for mismatches mapped into the base side (ignored when base is a string) |
+| `compareHighlightName` | `string` | `"highlight-diff-compare"` | `::highlight()` name for mismatches mapped into the compare side (ignored when compare is a string) |
+| `ignoredTags` | `string[]` | (none extra) | Merged with built-in ignored tags; text under these parent tag names is skipped when flattening **element** sides only |
 | `onDiffChange` | `(diffCount: number) => void` | — | Runs **after** each compare — `diffCount` is the number of **differing character positions**, not contiguous ranges |
 | `onError` | `(error: Error) => void` | — | Error handler |
 
@@ -433,11 +452,12 @@ createCompareHighlight(
 | Property / method | Type | Description |
 |-------------------|------|-------------|
 | `diffCount` | `number` | Differing character positions from the last synchronous compare |
+| `sources` | `{ base: CompareSource; compare: CompareSource }` | Frozen view of the two sides; narrow on `kind` for `HTMLElement` vs string |
 | `update` | `(options: Partial<CompareOptions>) => void` | Merge new options and re-run comparison |
 | `refresh` | `() => void` | Re-run comparison with current DOM text (e.g. after `contenteditable` changes) |
 | `destroy` | `() => void` | Clear highlights and cancel pending work |
 
-If the browser does not support the CSS Custom Highlight API, `createCompareHighlight` returns a no-op controller and invokes `onError` when supplied. Omitting non-null elements throws synchronously (`baseElement` and `compareElement` are required).
+If the browser does not support the CSS Custom Highlight API, `createCompareHighlight` returns a no-op controller and invokes `onError` when supplied. `base` and `compare` must be defined (not `null` / `undefined`); each must be a string or a valid `HTMLElement` (non-element values throw `INVALID_INPUT`). To change which element or string is compared after construction, `destroy()` the controller and create a new one.
 
 ### Advanced comparison helpers
 

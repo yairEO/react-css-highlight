@@ -9,8 +9,13 @@ import {
 } from "../shared/constants";
 import { createControllerCore } from "../shared/controllerKit";
 import { isHighlightAPISupported } from "../shared/cssHighlights";
-import { buildTextMap, isBrowser } from "../shared/dom";
-import { CompareError, HighlightError, normalizeError } from "../shared/errors";
+import { buildTextMap, isBrowser, type TextMap } from "../shared/dom";
+import {
+  assertHTMLElement,
+  CompareError,
+  HighlightError,
+  normalizeError,
+} from "../shared/errors";
 import { createNoopController } from "../shared/noop";
 import {
   COMPARE_NAME_KEYS,
@@ -22,67 +27,84 @@ import { createHighlightTarget } from "../shared/target";
 import type { WithDefaults } from "../shared/types";
 import { positionalDiff } from "./diff";
 import { mapDiffToRanges } from "./rangeMapper";
-import type { CompareController, CompareOptions } from "./types";
+import type {
+  CompareController,
+  CompareInput,
+  CompareOptions,
+  CompareSource,
+} from "./types";
 
-type ResolvedCompareOptions = WithDefaults<{
-  baseHighlightName: string;
-  compareHighlightName: string;
-  ignoredTags: string[];
-  debounce: number;
-  onDiffChange: (diffCount: number) => void;
-  onError: (error: Error) => void;
-  onPaint?: (info: { diffCount: number }) => void;
-}>;
+function toSource(input: CompareInput): CompareSource {
+  if (typeof input === "string") {
+    return { kind: "text", text: input };
+  }
+  assertHTMLElement(input, "createCompareHighlight: base/compare");
+  return { kind: "element", element: input };
+}
 
-function toResolvedCompare(o: CompareOptions): ResolvedCompareOptions {
+function buildSourceMap(src: CompareSource, ignoredTags: string[]): TextMap {
+  return src.kind === "text"
+    ? { text: src.text, segments: [] }
+    : buildTextMap(src.element, ignoredTags);
+}
+
+function toResolvedCompare(o: CompareOptions): WithDefaults<CompareOptions> {
   return {
+    ignoredTags: o.ignoredTags ?? [],
+    debounce: o.debounce ?? DEFAULT_COMPARE_DEBOUNCE_MS,
+    onError: o.onError ?? (() => {}),
     baseHighlightName: o.baseHighlightName ?? DEFAULT_COMPARE_BASE_HIGHLIGHT,
     compareHighlightName:
       o.compareHighlightName ?? DEFAULT_COMPARE_COMPARE_HIGHLIGHT,
-    ignoredTags: o.ignoredTags ?? [],
-    debounce: o.debounce ?? DEFAULT_COMPARE_DEBOUNCE_MS,
     onDiffChange: o.onDiffChange ?? (() => {}),
-    onError: o.onError ?? (() => {}),
     onPaint: o.onPaint,
-  };
+  } as WithDefaults<CompareOptions>;
 }
 
 /**
- * Highlights positional UTF-16 differences between two subtree texts.
+ * Highlights positional UTF-16 differences between two subtree texts or
+ * compares a flattened string against one subtree (`HTMLElement | string`).
  *
  * Holds live `Range` objects until cleared — call {@link CompareController.destroy} when tearing down subtrees,
  * otherwise ranges may linger in CSS.highlights' internal bucket.
  *
- * @param baseElement Reference DOM root
- * @param compareElement Modified DOM root
+ * String sides participate in the diff but cannot be painted (no DOM `Range`).
+ * When both inputs are strings, computing runs but no highlights are scheduled.
+ *
+ * @param base Reference DOM root or flattened reference text
+ * @param compare Modified DOM root or flattened reference text
  * @since 3.0.0
  */
 export function createCompareHighlight(
-  baseElement: HTMLElement,
-  compareElement: HTMLElement,
+  base: CompareInput,
+  compare: CompareInput,
   options: CompareOptions = {}
 ): CompareController {
+  if (base == null || compare == null) {
+    throw new HighlightError(
+      "INVALID_INPUT",
+      "createCompareHighlight: base and compare are required"
+    );
+  }
+
+  const baseSource = toSource(base);
+  const compareSource = toSource(compare);
+
+  const sourcesView = Object.freeze({
+    base: baseSource,
+    compare: compareSource,
+  });
+
   const noopCompare = (): CompareController =>
     createNoopController({
       get diffCount() {
         return 0;
       },
-      get elements() {
-        return {
-          base: baseElement as HTMLElement,
-          compare: compareElement as HTMLElement,
-        };
+      get sources() {
+        return sourcesView;
       },
       update() {},
-      refresh() {},
     });
-
-  if (!baseElement || !compareElement) {
-    throw new HighlightError(
-      "INVALID_INPUT",
-      "createCompareHighlight: baseElement and compareElement are required"
-    );
-  }
 
   if (!isBrowser() || !isHighlightAPISupported()) {
     const err = new CompareError(
@@ -95,7 +117,7 @@ export function createCompareHighlight(
 
   const core = createControllerCore();
 
-  let current: ResolvedCompareOptions = toResolvedCompare(options);
+  let current: WithDefaults<CompareOptions> = toResolvedCompare(options);
 
   const baseTarget = createHighlightTarget(
     current.baseHighlightName,
@@ -115,8 +137,8 @@ export function createCompareHighlight(
     core.scheduler.cancel();
 
     try {
-      const baseMap = buildTextMap(baseElement, current.ignoredTags);
-      const compareMap = buildTextMap(compareElement, current.ignoredTags);
+      const baseMap = buildSourceMap(baseSource, current.ignoredTags);
+      const compareMap = buildSourceMap(compareSource, current.ignoredTags);
 
       const bothEmpty = baseMap.text.length === 0 && compareMap.text.length === 0;
       if (bothEmpty) {
@@ -149,6 +171,11 @@ export function createCompareHighlight(
       if (diffCount === 0) {
         baseTarget.clear();
         compareTarget.clear();
+        return;
+      }
+
+      const bothText = baseSource.kind === "text" && compareSource.kind === "text";
+      if (bothText) {
         return;
       }
 
@@ -207,11 +234,8 @@ export function createCompareHighlight(
     get diffCount() {
       return diffCount;
     },
-    get elements() {
-      return Object.freeze({
-        base: baseElement,
-        compare: compareElement,
-      });
+    get sources() {
+      return sourcesView;
     },
 
     update(newOptions: Partial<CompareOptions>): void {

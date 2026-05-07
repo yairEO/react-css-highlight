@@ -18,22 +18,9 @@ import type { WithDefaults } from "../shared/types";
 import { findTextMatches, normalizeSearchTerms } from "./findMatches";
 import type { HighlightController, HighlightMatch, HighlightOptions } from "./types";
 
-type ResolvedHighlightOptions = WithDefaults<{
-  search: string | string[];
-  highlightName: string;
-  caseSensitive: boolean;
-  wholeWord: boolean;
-  maxHighlights: number;
-  ignoredTags: string[];
-  debounce: number;
-  onHighlightChange: (count: number) => void;
-  onError: (error: Error) => void;
-  onPaint?: (info: { matchCount: number }) => void;
-}>;
-
 function toResolvedHighlightOptions(
   options: HighlightOptions
-): ResolvedHighlightOptions {
+): WithDefaults<HighlightOptions> {
   return {
     search: options.search,
     highlightName: options.highlightName ?? "highlight",
@@ -45,7 +32,7 @@ function toResolvedHighlightOptions(
     onHighlightChange: options.onHighlightChange ?? (() => {}),
     onError: options.onError ?? (() => {}),
     onPaint: options.onPaint,
-  };
+  } as WithDefaults<HighlightOptions>;
 }
 
 const UNSET = Symbol("unset");
@@ -78,7 +65,6 @@ export function createHighlight(
         return 0;
       },
       update() {},
-      refresh() {},
     });
 
   if (!isBrowser() || !isHighlightAPISupported()) {
@@ -92,7 +78,7 @@ export function createHighlight(
 
   const core = createControllerCore();
 
-  let current: ResolvedHighlightOptions = toResolvedHighlightOptions(options);
+  let current: WithDefaults<HighlightOptions> = toResolvedHighlightOptions(options);
 
   const target = createHighlightTarget(current.highlightName, "search-highlight");
 

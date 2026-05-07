@@ -17,6 +17,14 @@ export interface PositionalDiffResult {
   diffCount: number;
 }
 
+/** Accepted by `createCompareHighlight` — live subtree or flattened reference string */
+export type CompareInput = HTMLElement | string;
+
+/** Normalized comparison side after construction */
+export type CompareSource =
+  | { readonly kind: "element"; readonly element: HTMLElement }
+  | { readonly kind: "text"; readonly text: string };
+
 /** Options for `createCompareHighlight` */
 export interface CompareOptions extends BaseHighlightOptions {
   baseHighlightName?: string;
@@ -30,8 +38,11 @@ export interface CompareOptions extends BaseHighlightOptions {
 /** Compare highlight controller */
 export interface CompareController extends BaseController {
   readonly diffCount: number;
-  /** Original elements passed to `createCompareHighlight` */
-  readonly elements: { readonly base: HTMLElement; readonly compare: HTMLElement };
+  /** Resolved sides passed to `createCompareHighlight` (discriminate on `kind`) */
+  readonly sources: {
+    readonly base: CompareSource;
+    readonly compare: CompareSource;
+  };
   update(options: Partial<CompareOptions>): void;
   refresh(): void;
   destroy(): void;

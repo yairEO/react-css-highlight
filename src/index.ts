@@ -3,7 +3,9 @@
 export { createCompareHighlight, positionalDiff } from "./compare";
 export type {
   CompareController,
+  CompareInput,
   CompareOptions,
+  CompareSource,
   DiffRange,
   PositionalDiffResult,
 } from "./compare/types";

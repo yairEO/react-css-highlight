@@ -144,6 +144,24 @@ function updateContent(newItems) {
 }
 ```
 
+## Positional compare (`createCompareHighlight`)
+
+Diff **flattened text** between two `HTMLElement`s or compare a **reference string** to one element (string side is not painted). Full API, options, and string-side gotchas (`\r\n`, `<br>`): see [main README — String comparison](../../README.md#string-comparison-positional-diff).
+
+```javascript
+import { createCompareHighlight } from 'react-css-highlight/vanilla';
+import 'react-css-highlight/styles';
+
+const expected = 'Expected copy';
+const live = document.getElementById('live');
+
+const compareCtrl = createCompareHighlight(expected, live, {
+  onDiffChange: (count) => console.log('Diff positions:', count),
+});
+
+live.addEventListener('input', () => compareCtrl.refresh());
+```
+
 ## Utility Functions
 
 ```javascript
@@ -173,7 +191,9 @@ import { isHighlightAPISupported } from 'react-css-highlight/vanilla';
 if (!isHighlightAPISupported()) {
   console.warn('CSS Custom Highlight API not supported');
 }
-`Low-level utilities for advanced use cases:
+```
+
+Low-level utilities for advanced use cases:
 
 ```javascript
 import {
