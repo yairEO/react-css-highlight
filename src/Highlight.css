@@ -42,3 +42,14 @@
   background-color: var(--highlight-active, #fcd34d);
   color: #000;
 }
+
+/* String comparison: base (reference) vs compare (modified) */
+::highlight(highlight-diff-base) {
+  background-color: var(--highlight-diff-base, #fecaca);
+  color: inherit;
+}
+
+::highlight(highlight-diff-compare) {
+  background-color: var(--highlight-diff-compare, #bbf7d0);
+  color: inherit;
+}

@@ -261,6 +261,83 @@
       box-shadow: 0 4px 6px rgba(251, 191, 36, 0.1);
     }
 
+    .compare-section {
+      margin-top: 3rem;
+      padding-top: 2.5rem;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .compare-section h2.compare-title {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      font-size: 1.85rem;
+      color: #1a202c;
+    }
+
+    .compare-legend-box {
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem 2rem;
+      align-items: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
+    }
+
+    .legend-base {
+      background-color: #fecaca;
+    }
+
+    .legend-compare {
+      background-color: #bbf7d0;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .compare-panel > label {
+      margin-bottom: 0.5rem;
+    }
+
+    .compare-editable {
+      min-height: 200px;
+      cursor: text;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .compare-editable:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
     @media (max-width: 768px) {
       body {
         padding: 1rem;
@@ -290,6 +367,10 @@
 
       .content {
         padding: 1.5rem;
+      }
+
+      .compare-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -388,6 +469,63 @@
         it suitable for use in production applications where performance matters.
       </p>
     </div>
+
+    <section class="compare-section">
+      <h2 class="compare-title">String Comparison</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Diff Characters</span>
+          <span class="stat-value" id="compareDiffCount">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Base Characters</span>
+          <span class="stat-value" id="compareBaseLen">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Compare Characters</span>
+          <span class="stat-value" id="compareModifiedLen">0</span>
+        </div>
+      </div>
+
+      <div class="compare-legend-box">
+        <div class="legend-row">
+          <span class="legend-item">
+            <span class="swatch legend-base"></span>
+            Pink: differences in base (reference)
+          </span>
+          <span class="legend-item">
+            <span class="swatch legend-compare"></span>
+            Green: differences in compare (modified)
+          </span>
+        </div>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-panel">
+          <label>Base (reference)</label>
+          <div
+            class="content compare-editable"
+            id="compareBase"
+            contenteditable="true"
+            spellcheck="false"
+          >The CSS Custom Highlight API provides a modern way to highlight text in web pages. It uses Range objects and the CSS highlights registry to apply styles without modifying the DOM structure. This approach is fast, efficient, and non-invasive.</div>
+        </div>
+        <div class="compare-panel">
+          <label>Compare (modified)</label>
+          <div
+            class="content compare-editable"
+            id="compareModified"
+            contenteditable="true"
+            spellcheck="false"
+          >The CSS Custom Highlight API offers a modern way to highlight text in web applications. It uses Range objects and the CSS highlights registry to apply visual styles without modifying the DOM. This approach is fast and non-invasive.</div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="secondary" type="button" id="compareResetBtn">Reset</button>
+      </div>
+    </section>
   </div>
 
   <script type="module" src="/main.js"></script>

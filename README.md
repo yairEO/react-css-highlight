@@ -22,6 +22,7 @@
 - ⚡ **Non-Blocking** - Uses `requestIdleCallback` to prevent UI freezes during search operations
 - 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
 - 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
+- 🧭 **Positional string compare** - Highlight character-level differences between two DOM trees (via `createCompareHighlight`; vanilla / framework-agnostic)
 - 📦 **Zero Dependencies** - Pure React + Modern Browser APIs
 - 🧩 **Multiple Usage Patterns** - React (ref-based/wrapper/hook) or vanilla JS (framework-agnostic)
 - 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
@@ -39,6 +40,7 @@
     - [Wrapper (Simple)](#2-wrapper-simple)
     - [Hook (Maximum Control)](#3-hook-maximum-control)
   - [Vanilla JavaScript Usage](#vanilla-javascript-usage)
+  - [String comparison (positional diff)](#string-comparison-positional-diff)
 - [API Reference](#-api-reference)
 - [Styling](#-styling)
 - [Performance](#-performance)
@@ -280,6 +282,43 @@ This library also provides a framework-agnostic API for use with Vue, Svelte, An
 
 📖 **[See Vanilla JS Documentation →](src/vanilla/README.md)**
 
+### String comparison (positional diff)
+
+Compare two elements’ **flattened text** character-by-character at each index (UTF-16 code units, aligned with concatenated text nodes). Mismatched characters and tails when lengths differ show as highlights on **both** sides: default names `highlight-diff-base` (reference) and `highlight-diff-compare` (modified). No DOM markup is injected; styling uses the same [CSS Custom Highlight API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API) as search highlights.
+
+**Import once:** include styles so `::highlight(highlight-diff-base)` / `::highlight(highlight-diff-compare)` apply (for example `import "react-css-highlight/dist/Highlight.css"` or `import "react-css-highlight/styles"`).
+
+```js
+import { createCompareHighlight } from "react-css-highlight/vanilla";
+import "react-css-highlight/styles";
+
+const baseEl = document.getElementById("base");
+const compareEl = document.getElementById("compare");
+if (!baseEl || !compareEl) {
+  throw new Error("Missing #base or #compare element");
+}
+
+const ctrl = createCompareHighlight(baseEl, compareEl, {
+  onDiffChange(count) {
+    console.log("Differing character positions:", count);
+  },
+});
+
+// After edits (e.g. input on contenteditable), re-run comparison:
+ctrl.refresh();
+
+// Later:
+ctrl.destroy();
+```
+
+Behavior notes:
+
+- **Positional**, not Myers/LCS alignment: inserting text in one side shifts subsequent indices, so downstream regions may appear as entirely different unless strings stay the same length and prefix-identical where you care about alignment.
+- **Whitespace counts:** flattened text includes all text nodes (including whitespace-only) so offsets stay stable.
+- **Timing:** Diff count updates **synchronously**; painting registers with `CSS.highlights` inside `requestIdleCallback` (same pattern as `createHighlight`).
+
+**Live example:** [Vanilla JS Demo](https://yaireo.github.io/react-css-highlight/vanilla-demo/) includes an interactive string-comparison block.
+
 ---
 
 ## 📋 API Reference
@@ -367,6 +406,47 @@ import {
 } from "react-css-highlight";
 ```
 
+### `createCompareHighlight` (string comparison)
+
+Framework-agnostic API for **positional** diff highlighting between two `HTMLElement`s. Also exported from `"react-css-highlight"` root for reuse in bundlers alongside React.
+
+**Signature:**
+
+```ts
+createCompareHighlight(
+  baseElement: HTMLElement,
+  compareElement: HTMLElement,
+  options?: CompareOptions
+): CompareController
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `baseHighlightName` | `string` | `"highlight-diff-base"` | `::highlight()` name for mismatches mapped into the base element |
+| `compareHighlightName` | `string` | `"highlight-diff-compare"` | `::highlight()` name for mismatches mapped into the compare element |
+| `ignoredTags` | `string[]` | (none extra) | Merged with built-in ignored tags; text under these parent tag names is skipped when flattening |
+| `onDiffChange` | `(diffCount: number) => void` | — | Runs **after** each compare — `diffCount` is the number of **differing character positions**, not contiguous ranges |
+| `onError` | `(error: Error) => void` | — | Error handler |
+
+**`CompareController`**
+
+| Property / method | Type | Description |
+|-------------------|------|-------------|
+| `diffCount` | `number` | Differing character positions from the last synchronous compare |
+| `update` | `(options: Partial<CompareOptions>) => void` | Merge new options and re-run comparison |
+| `refresh` | `() => void` | Re-run comparison with current DOM text (e.g. after `contenteditable` changes) |
+| `destroy` | `() => void` | Clear highlights and cancel pending work |
+
+If the browser does not support the CSS Custom Highlight API, `createCompareHighlight` returns a no-op controller and invokes `onError` when supplied. Omitting non-null elements throws synchronously (`baseElement` and `compareElement` are required).
+
+### Advanced comparison helpers
+
+For custom integrations, the same functions used internally are exported from `"react-css-highlight"` and `"react-css-highlight/vanilla"`:
+
+- `buildTextMap(element, ignoredTags?)` — flatten descendant text to a string plus per–text-node spans (includes whitespace-only nodes).
+- `positionalDiff(baseText, compareText)` — pure string positional diff; returns grouped ranges and `diffCount`.
+- `mapDiffToRanges(diffRanges, textMap)` — turn flat ranges into `Range[]` clipped to the map’s length.
+
 ## 🎨 Styling
 
 ### Default Styles
@@ -406,6 +486,15 @@ All highlight colors can be customized using CSS custom properties. Override the
 }
 ```
 
+**String comparison (default theme):**
+
+```css
+:root {
+  --highlight-diff-base: #fecaca;     /* Light red (base / reference) */
+  --highlight-diff-compare: #bbf7d0;  /* Light green (compare / modified) */
+}
+```
+
 **Example:** Customize colors to match your theme:
 
 ```css
@@ -431,7 +520,7 @@ highlightName="highlight-error"     // Light red (#ffccbc)
 highlightName="highlight-active"    // Dark yellow (#fcd34d), bold text
 ```
 
-### Custom Styles
+[String comparison](#string-comparison-positional-diff) uses two highlight layers: defaults `highlight-diff-base` and `highlight-diff-compare`, set via `baseHighlightName` / `compareHighlightName` on `createCompareHighlight`.
 
 Create custom highlight styles by providing a `highlightName`:
 
@@ -449,6 +538,20 @@ Create custom highlight styles by providing a `highlightName`:
   color: white;
   text-decoration: underline wavy;
   font-weight: bold;
+}
+```
+
+For string comparison, override the built-in diff names or variables:
+
+```css
+::highlight(highlight-diff-base) {
+  background-color: var(--highlight-diff-base, #fecaca);
+  color: inherit;
+}
+
+::highlight(highlight-diff-compare) {
+  background-color: var(--highlight-diff-compare, #bbf7d0);
+  color: inherit;
 }
 ```
 
@@ -1082,12 +1185,11 @@ const ref = useRef<HTMLDivElement>(null);
                       │ Delegates to
 ┌─────────────────────▼─────────────────────────────────────┐
 │                   Vanilla Core                            │
-│  createHighlight (Framework-agnostic)                     │
-│  - Input validation & normalization                       │
-│  - DOM traversal & text matching                          │
+│  createHighlight · createCompareHighlight (both agnostic) │
+│  - DOM traversal · regex search / positional compare      │
 │  - CSS Custom Highlight API integration                   │
 │  - Async scheduling (requestIdleCallback)                 │
-│  - Used by React, Vue, Svelte, Angular, etc.             │
+│  - Used by React, Vue, Svelte, Angular, etc.              │
 └───────────────────────────────────────────────────────────┘
 ```
 

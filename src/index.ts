@@ -1,5 +1,19 @@
 // Main component with ref-based API (default export for power users)
 export { default } from "./Highlight";
+export type {
+  CompareController,
+  CompareOptions,
+  DiffRange,
+  PositionalDiffResult,
+  TextMap,
+  TextMapSegment,
+} from "./Highlight.compare";
+export {
+  buildTextMap,
+  createCompareHighlight,
+  mapDiffToRanges,
+  positionalDiff,
+} from "./Highlight.compare";
 // Export constants
 export {
   DEFAULT_DEBOUNCE_MS,

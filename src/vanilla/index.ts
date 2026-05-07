@@ -27,6 +27,20 @@ import {
   removeHighlight,
 } from "../Highlight.utils";
 
+export type {
+  CompareController,
+  CompareOptions,
+  DiffRange,
+  PositionalDiffResult,
+  TextMap,
+  TextMapSegment,
+} from "../Highlight.compare";
+export {
+  buildTextMap,
+  createCompareHighlight,
+  mapDiffToRanges,
+  positionalDiff,
+} from "../Highlight.compare";
 // Re-export constants
 export {
   DEFAULT_DEBOUNCE_MS,

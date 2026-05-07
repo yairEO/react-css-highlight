@@ -1,5 +1,15 @@
-import { createHighlight, isHighlightAPISupported } from 'react-css-highlight/vanilla';
+import {
+  createCompareHighlight,
+  createHighlight,
+  isHighlightAPISupported,
+} from 'react-css-highlight/vanilla';
 import 'react-css-highlight/styles';
+
+const COMPARE_BASE_INITIAL =
+  'The CSS Custom Highlight API provides a modern way to highlight text in web pages. It uses Range objects and the CSS highlights registry to apply styles without modifying the DOM structure. This approach is fast, efficient, and non-invasive.';
+
+const COMPARE_MODIFIED_INITIAL =
+  'The CSS Custom Highlight API offers a modern way to highlight text in web applications. It uses Range objects and the CSS highlights registry to apply visual styles without modifying the DOM. This approach is fast and non-invasive.';
 
 // Browser support check
 const browserCheckEl = document.getElementById('browser-check');
@@ -111,4 +121,57 @@ destroyBtn.addEventListener('click', () => {
 
 // Initialize
 updateHighlight();
+
+/* --- String comparison demo (positional diff, two contenteditable nodes) --- */
+
+function initCompareDemo() {
+  if (!isSupported) {
+    return;
+  }
+
+  const baseEl = document.getElementById('compareBase');
+  const modEl = document.getElementById('compareModified');
+  const diffEl = document.getElementById('compareDiffCount');
+  const baseLenEl = document.getElementById('compareBaseLen');
+  const compareLenEl = document.getElementById('compareModifiedLen');
+  const resetBtn = document.getElementById('compareResetBtn');
+
+  if (!baseEl || !modEl || !diffEl || !baseLenEl || !compareLenEl || !resetBtn) {
+    return;
+  }
+
+  function updateLen() {
+    baseLenEl.textContent = String(baseEl.textContent?.length ?? 0);
+    compareLenEl.textContent = String(modEl.textContent?.length ?? 0);
+  }
+
+  const compareCtrl = createCompareHighlight(baseEl, modEl, {
+    onDiffChange(count) {
+      diffEl.textContent = String(count);
+      updateLen();
+    },
+    onError: (err) => {
+      console.error('Compare highlight error:', err);
+    },
+  });
+
+  let debounceId;
+  function scheduleRefresh() {
+    clearTimeout(debounceId);
+    debounceId = setTimeout(() => {
+      compareCtrl.refresh();
+    }, 150);
+  }
+
+  baseEl.addEventListener('input', scheduleRefresh);
+  modEl.addEventListener('input', scheduleRefresh);
+
+  resetBtn.addEventListener('click', () => {
+    baseEl.textContent = COMPARE_BASE_INITIAL;
+    modEl.textContent = COMPARE_MODIFIED_INITIAL;
+    compareCtrl.refresh();
+  });
+}
+
+initCompareDemo();
 
