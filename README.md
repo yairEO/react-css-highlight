@@ -22,7 +22,7 @@
 - ⚡ **Non-Blocking** - Uses `requestIdleCallback` to prevent UI freezes during search operations
 - 🎨 **Fully Customizable** - Control highlights colors with simple CSS variables
 - 🔄 **Multi-Term Support** - Highlight multiple search terms simultaneously with different styles
-- 🧭 **Positional string compare** — Character-level differences between two DOM subtrees **or** a string vs subtree (via `createCompareHighlight`; vanilla / framework-agnostic)
+- 🧭 **Positional compare (markup-agnostic)** — `createCompareHighlight` diffs **flattened text** (every `#text` node under a root, in tree order). **How you wrap words in elements does not change the compared string**—only the actual characters do. Mismatches paint via the CSS Highlight API (`Range`s on those text nodes, `::highlight()` styles), not by injecting `<mark>` or forcing both sides to share the same HTML shape (vanilla / framework-agnostic)
 - 📦 **Zero Dependencies** - Pure React + Modern Browser APIs
 - 🧩 **Multiple Usage Patterns** - React (ref-based/wrapper/hook) or vanilla JS (framework-agnostic)
 - 🌐 **TypeScript First** - Full type safety with extensive JSDoc documentation
@@ -285,6 +285,8 @@ This library also provides a framework-agnostic API for use with Vue, Svelte, An
 ### String comparison (positional diff)
 
 Compare two sides’ **flattened text** character-by-character at each index (UTF-16 code units, aligned with concatenated text nodes). Each side can be an `HTMLElement` **or** a plain `string` (expected text / reference without a rendered node). Mismatched characters and tails when lengths differ show as highlights on **DOM** sides only (string sides have no `Range` to paint). When both sides are elements, default names are `highlight-diff-base` (reference) and `highlight-diff-compare` (modified). No DOM markup is injected; styling uses the same [CSS Custom Highlight API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API) as search highlights.
+
+**Why CSS highlights fit compare mode:** Decoration is **orthogonal to your component markup**. Whether the live content is one text node or split across many spans, links, or design-system wrappers, the walk still yields one logical string and the same positional diff; the engine then clips highlights to the underlying `#text` ranges. You avoid wrapping every differing character in new elements (and the reflow/reconciliation issues that brings in React), and you never need to “normalize” both trees to identical tag structure just to show a diff visual.
 
 **Import once:** include styles so `::highlight(highlight-diff-base)` / `::highlight(highlight-diff-compare)` apply (for example `import "react-css-highlight/dist/Highlight.css"` or `import "react-css-highlight/styles"`).
 
