@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src", "stories/**/*.tsx"],
   "exclude": ["node_modules"]

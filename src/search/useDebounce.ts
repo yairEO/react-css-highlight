@@ -20,18 +20,15 @@ export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    // No debounce if delay is 0 or negative
     if (delay <= 0) {
       setDebouncedValue(value);
       return;
     }
 
-    // Set up timeout to update debounced value
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
-    // Cleanup timeout if value changes or component unmounts
     return () => {
       clearTimeout(handler);
     };

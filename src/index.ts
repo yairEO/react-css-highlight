@@ -1,43 +1,43 @@
 // Main component with ref-based API (default export for power users)
-export { default } from "./Highlight";
+
+export { createCompareHighlight, positionalDiff } from "./compare";
 export type {
   CompareController,
   CompareOptions,
   DiffRange,
   PositionalDiffResult,
-  TextMap,
-  TextMapSegment,
-} from "./Highlight.compare";
+} from "./compare/types";
 export {
-  buildTextMap,
-  createCompareHighlight,
-  mapDiffToRanges,
-  positionalDiff,
-} from "./Highlight.compare";
-// Export constants
-export {
-  DEFAULT_DEBOUNCE_MS,
-  DEFAULT_MAX_HIGHLIGHTS,
-  IGNORED_TAG_NAMES,
-  SLOW_SEARCH_THRESHOLD_MS,
-} from "./Highlight.constants";
-export { useHighlight } from "./Highlight.hooks";
-// Export types
+  findTextMatches,
+  normalizeSearchTerms,
+} from "./search/findMatches";
+export { default } from "./search/Highlight";
+export { default as HighlightWrapper } from "./search/HighlightWrapper";
 export type {
-  HighlightMatch,
   HighlightProps,
   HighlightWrapperProps,
   UseHighlightResult,
-} from "./Highlight.types";
-// Export utility functions for advanced usage
+} from "./search/reactTypes";
+export type {
+  HighlightController,
+  HighlightMatch,
+  HighlightOptions,
+} from "./search/types";
+export { useDebounce } from "./search/useDebounce";
+export { useHighlight } from "./search/useHighlight";
 export {
-  findTextMatches,
+  DEFAULT_COMPARE_BASE_HIGHLIGHT,
+  DEFAULT_COMPARE_COMPARE_HIGHLIGHT,
+  DEFAULT_COMPARE_DEBOUNCE_MS,
+  DEFAULT_DEBOUNCE_MS,
+  DEFAULT_MAX_HIGHLIGHTS,
+  IDLE_TIMEOUT_MS,
+  IGNORED_TAG_NAMES,
+  SLOW_SEARCH_THRESHOLD_MS,
+} from "./shared/constants";
+export {
   isHighlightAPISupported,
-  normalizeSearchTerms,
   registerHighlight,
   removeHighlight,
-} from "./Highlight.utils";
-// Convenience wrapper component (named export for simple cases)
-export { default as HighlightWrapper } from "./HighlightWrapper";
-// Export hooks for advanced usage
-export { useDebounce } from "./useDebounce";
+} from "./shared/cssHighlights";
+export { normalizeIgnoredTags } from "./shared/dom";
