@@ -22,13 +22,7 @@
     "not IE_Mob 11",
     "not op_mini all"
   ],
-  "np": {
-    "packageManager": "pnpm",
-    "testScript": "check",
-    "yolo": false
-  },
   "scripts": {
-    "release": "pnpm run build && np",
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
     "storybook": "storybook dev -p 6006",
@@ -75,7 +69,6 @@
     "@types/react": "^19.2.14",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
-    "np": "^12.1.1",
     "prop-types": "^15.8.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
