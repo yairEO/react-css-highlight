@@ -59,6 +59,7 @@ type Story = StoryObj<typeof useHighlight>;
  * Interactive search with real-time match count display
  */
 export const InteractiveSearch: Story = {
+  tags: ["visual"],
   render: () => {
     const [searchTerm, setSearchTerm] = useState("react");
     const [caseSensitive, setCaseSensitive] = useState(false);
@@ -164,6 +165,7 @@ const SUCCESS_TERMS = ["success", "fixed", "resolved"];
  * Multi-term highlighting with different styles
  */
 export const MultiTermHighlight: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
 

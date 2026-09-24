@@ -27,6 +27,8 @@
     "prepublishOnly": "pnpm run build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "test-storybook": "vitest --project=storybook --run",
+    "test-storybook-visual": "playwright test -c playwright.storybook.config.ts",
     "check": "biome check . --diagnostic-level=error",
     "check:fix": "biome check --write .",
     "lint": "biome lint . --diagnostic-level=error",
@@ -65,15 +67,22 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
+    "@playwright/test": "1.63.0",
+    "@storybook/addon-vitest": "10.6.0",
     "@storybook/react-vite": "^10.6.0",
+    "@types/node": "^26.6.2",
     "@types/react": "^19.2.14",
+    "@vitest/browser-playwright": "4.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
+    "playwright": "1.63.0",
+    "playwright-core": "1.63.0",
     "prop-types": "^15.8.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "storybook": "^10.6.0",
     "tsup": "^8.5.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "4.0.0"
   }
 }

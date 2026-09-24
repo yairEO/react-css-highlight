@@ -396,18 +396,22 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const TwoElements: Story = {
+  tags: ["visual"],
   render: () => <TwoElementsDemo />,
 };
 
 export const WordsInSeparateNodes: Story = {
+  tags: ["visual"],
   render: () => <WordsInSeparateNodesDemo />,
 };
 
 export const StringVsElement: Story = {
+  tags: ["visual"],
   render: () => <StringVsElementDemo />,
 };
 
 export const CustomDiffAlgorithm: Story = {
+  tags: ["visual"],
   name: "Custom diff (Positional vs LCS)",
   render: () => <CustomDiffDemo />,
 };

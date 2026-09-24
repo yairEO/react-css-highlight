@@ -1,7 +1,9 @@
 import { definePreview } from '@storybook/react-vite';
 import './preview.css';
+import { withVisualFullPage } from './decorators/withVisualFullPage';
 
 export default definePreview({
+    decorators: [withVisualFullPage],
     parameters: {
         docs: {
             codePanel: true,

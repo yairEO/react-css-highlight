@@ -29,6 +29,7 @@ type Story = StoryObj<typeof HighlightWrapper>;
  * No need to manage refs - just wrap your content and specify what to search for.
  */
 export const Basic: Story = {
+    tags: ["visual"],
     render: () => {
         return (
             <div style={{ maxWidth: 600 }}>
@@ -47,6 +48,7 @@ export const Basic: Story = {
  * Showcases that wrappers also benefit from automatic range merging
  */
 export const MultipleWrappers: Story = {
+    tags: ["visual"],
     render: () => {
         const [matchCount1, setMatchCount1] = useState(0);
         const [matchCount2, setMatchCount2] = useState(0);
