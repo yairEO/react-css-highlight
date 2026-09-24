@@ -74,6 +74,7 @@ export const MultipleTerms: Story = {
  * Interactive search with case sensitivity toggle
  */
 export const InteractiveSearch: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
     const [searchTerm, setSearchTerm] = useState("data");
@@ -159,6 +160,7 @@ export const InteractiveSearch: Story = {
  * Whole word matching
  */
 export const WholeWordMatch: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
     const [wholeWord, setWholeWord] = useState(false);
@@ -260,6 +262,7 @@ export const MultipleHighlights: Story = {
  * Large content performance test
  */
 export const LargeContent: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
     const [matchCount, setMatchCount] = useState(0);
@@ -304,6 +307,7 @@ export const LargeContent: Story = {
  * Demonstrates automatic range merging - all instances use default highlightName="highlight"
  */
 export const MultipleInstances: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef1 = useRef<HTMLDivElement>(null);
     const contentRef2 = useRef<HTMLDivElement>(null);

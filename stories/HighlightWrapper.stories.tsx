@@ -48,6 +48,7 @@ export const Basic: Story = {
  * Showcases that wrappers also benefit from automatic range merging
  */
 export const MultipleWrappers: Story = {
+    tags: ["visual"],
     render: () => {
         const [matchCount1, setMatchCount1] = useState(0);
         const [matchCount2, setMatchCount2] = useState(0);
