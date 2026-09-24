@@ -141,12 +141,12 @@ jobs:
           name: storybook-static
           path: storybook-static
 
-      # Same job: the background server stays up for later steps and is killed
-      # when the job ends. If the next step gets connection refused, fold these
-      # commands into the visual-test step.
+      # Server and tests share one step. A background process from an earlier
+      # step is killed when that step ends, which showed up as an empty
+      # #storybook-root and then ERR_CONNECTION_REFUSED on retry.
       # -c-1 disables cache. No -s: SPA fallback serves index.html for a missing
       # chunk and the screenshot is a blank page with status 200.
-      - name: Serve Storybook
+      - name: Run visual tests
         run: |
           pnpm dlx http-server@14 storybook-static -a 127.0.0.1 -p 6006 -c-1 &
           ok=0
@@ -158,9 +158,6 @@ jobs:
             sleep 1
           done
           test "$ok" -eq 1
-
-      - name: Run visual tests
-        run: |
           args=()
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.update_snapshots }}" = "true" ]; then
             find e2e/storybook -type d -name '*-snapshots' -prune -exec rm -rf {} +
