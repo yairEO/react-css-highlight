@@ -29,6 +29,7 @@ type Story = StoryObj<typeof HighlightWrapper>;
  * No need to manage refs - just wrap your content and specify what to search for.
  */
 export const Basic: Story = {
+    tags: ["visual"],
     render: () => {
         return (
             <div style={{ maxWidth: 600 }}>

@@ -36,6 +36,7 @@ type Story = StoryObj<typeof Highlight>;
  * Basic single term highlight
  */
 export const SingleTerm: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +55,7 @@ export const SingleTerm: Story = {
  * Multiple search terms highlighted at once
  */
 export const MultipleTerms: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -188,6 +190,7 @@ export const WholeWordMatch: Story = {
  * Custom highlight style using highlightName prop
  */
 export const CustomStyle: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -221,6 +224,7 @@ export const CustomStyle: Story = {
  * Multiple Highlight components with different styles
  */
 export const MultipleHighlights: Story = {
+  tags: ["visual"],
   render: () => {
     const contentRef = useRef<HTMLDivElement>(null);
 

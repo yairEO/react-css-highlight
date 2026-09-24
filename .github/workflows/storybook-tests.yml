@@ -1,0 +1,205 @@
+name: Storybook Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      update_snapshots:
+        description: Update storybook visual snapshots
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: storybook-tests-${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+env:
+  NODE_VERSION: "24"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      playwright_image: ${{ steps.playwright-image.outputs.playwright_image }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve Playwright Docker image
+        id: playwright-image
+        run: |
+          ver=$(node -p "require('playwright/package.json').version")
+          core=$(node -p "require('playwright-core/package.json').version")
+          if [ -z "$ver" ] || [ "$ver" = "undefined" ] || [ "$ver" != "$core" ]; then
+            echo "::error::playwright ($ver) and playwright-core ($core) must match"
+            exit 1
+          fi
+          image="mcr.microsoft.com/playwright:v${ver}-noble"
+          echo "playwright_image=$image" >> "$GITHUB_OUTPUT"
+          echo "Using Playwright Docker image: $image"
+
+      - name: Build Storybook
+        run: pnpm run build-storybook
+
+      - name: Validate build output
+        run: test -f storybook-static/index.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
+          retention-days: 1
+          if-no-files-found: error
+
+  test:
+    needs: build
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.update_snapshots) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        # One shard until the suite is slow. Grow as 1..N with no gaps.
+        shard: [1]
+    defaults:
+      run:
+        shell: bash
+    container:
+      image: ${{ needs.build.outputs.playwright_image }}
+      options: --user root
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Mark workspace safe for git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Portable stories. No storybook-static download and no http-server.
+      # The image supplies Chromium; do not playwright-install inside it.
+      - name: Run Vitest storybook tests
+        run: pnpm run test-storybook -- --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+
+  visual:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: write
+    defaults:
+      run:
+        shell: bash
+    env:
+      STORYBOOK_URL: http://127.0.0.1:6006
+    container:
+      image: ${{ needs.build.outputs.playwright_image }}
+      options: --user root
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Mark workspace safe for git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      # Same job: the background server stays up for later steps and is killed
+      # when the job ends. If the next step gets connection refused, fold these
+      # commands into the visual-test step.
+      # -c-1 disables cache. No -s: SPA fallback serves index.html for a missing
+      # chunk and the screenshot is a blank page with status 200.
+      - name: Serve Storybook
+        run: |
+          pnpm dlx http-server@14 storybook-static -a 127.0.0.1 -p 6006 -c-1 &
+          ok=0
+          for _ in $(seq 1 60); do
+            if curl -sf -o /dev/null http://127.0.0.1:6006; then
+              ok=1
+              break
+            fi
+            sleep 1
+          done
+          test "$ok" -eq 1
+
+      - name: Run visual tests
+        run: |
+          args=()
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.update_snapshots }}" = "true" ]; then
+            find e2e/storybook -type d -name '*-snapshots' -prune -exec rm -rf {} +
+            args+=( '--update-snapshots=all' )
+          fi
+          pnpm run test-storybook-visual -- "${args[@]}"
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: storybook-visual-html
+          path: playwright-report
+          retention-days: 1
+          if-no-files-found: ignore
+
+      # Anchor the ts file so the artifact root stays e2e/storybook/ and
+      # visual.spec.ts-snapshots/ is preserved. Commit these PNGs only when
+      # the visual tests step succeeded.
+      - name: Upload linux snapshots
+        if: ${{ !cancelled() && github.event_name == 'workflow_dispatch' && inputs.update_snapshots }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-linux-snapshots
+          path: |
+            e2e/storybook/discoverVisualStories.ts
+            e2e/storybook/**/*-chromium-linux.png
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Commit updated linux Chromium snapshots
+        if: ${{ success() && github.event_name == 'workflow_dispatch' && inputs.update_snapshots }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          find e2e/storybook -type f -name '*-chromium-linux.png' -print0 \
+            | xargs -0 -r git add --
+          if git diff --cached --quiet; then
+            echo "No snapshot changes to commit"
+            exit 0
+          fi
+          git commit -m "test: update storybook visual snapshots"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
