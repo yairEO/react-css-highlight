@@ -200,3 +200,47 @@ jobs:
           fi
           git commit -m "test: update storybook visual snapshots"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+
+  # Same `pages` group as the Storybook deploy. cancel-in-progress stays
+  # false so a site publish and a report publish cannot overwrite each other.
+  publish-visual-report:
+    needs: visual
+    if: ${{ failure() && needs.visual.result == 'failure' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: storybook-visual-html
+          path: playwright-report
+
+      - name: Publish visual HTML report
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./playwright-report
+          destination_dir: visual/${{ github.run_id }}-${{ github.run_attempt }}
+          keep_files: true
+
+      - name: Comment report URL on the pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          url="https://yaireo.github.io/react-css-highlight/visual/${{ github.run_id }}-${{ github.run_attempt }}/"
+          gh pr comment "${{ github.event.pull_request.number }}" --body "$(cat <<EOF
+          ${url}
+
+          Pages may take a minute to rebuild. The trace icon is there only for a retried test.
+          EOF
+          )"

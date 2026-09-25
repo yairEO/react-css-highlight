@@ -5,11 +5,10 @@ on:
     push:
         branches: [master] # Or 'master' or your default branch
 
-# Allow this job to clone the repo and create a page deployment
+# Push the built site onto gh-pages. Do not use actions/deploy-pages:
+# that replaces the whole Pages site, including visual/<run> reports.
 permissions:
-    contents: read
-    pages: write
-    id-token: write
+    contents: write
 
 concurrency:
     group: "pages"
@@ -49,14 +48,12 @@ jobs:
                   mkdir -p storybook-static/vanilla-demo
                   cp -r examples/vanilla-demo/dist/* storybook-static/vanilla-demo/
 
-            - name: Setup GitHub Pages
-              uses: actions/configure-pages@v6
-
-            - name: Upload Storybook artifact
-              uses: actions/upload-pages-artifact@v5
+            # keep_files leaves visual/ in place. enable_jekyll stays at its
+            # default so the action writes .nojekyll (Jekyll would drop _ paths).
+            - name: Publish site to gh-pages
+              uses: peaceiris/actions-gh-pages@v4
               with:
-                  path: ./storybook-static # Path to the built Storybook
-
-            - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v5
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_branch: gh-pages
+                  publish_dir: ./storybook-static
+                  keep_files: true

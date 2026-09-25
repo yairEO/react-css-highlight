@@ -1,0 +1,50 @@
+name: Prune visual reports
+
+on:
+  schedule:
+    # Weekly. Folders are named by run id, so age comes from git history.
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Same group as the Storybook deploy and the failed-report publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Delete visual reports older than 14 days
+        run: |
+          if [ ! -d visual ]; then
+            echo "No visual reports"
+            exit 0
+          fi
+          cutoff=$(date -d '14 days ago' +%s)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          removed=0
+          for d in visual/*/; do
+            [ -d "$d" ] || continue
+            ts=$(git log -1 --format=%ct -- "$d" || echo 0)
+            if [ -n "$ts" ] && [ "$ts" -lt "$cutoff" ]; then
+              git rm -r -- "$d"
+              removed=1
+            fi
+          done
+          if [ "$removed" -eq 0 ]; then
+            echo "Nothing to prune"
+            exit 0
+          fi
+          git commit -m "chore: prune visual reports older than 14 days"
+          git push origin gh-pages
