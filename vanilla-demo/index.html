@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanilla Highlight Demo</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%) fixed;min-height:100vh;padding:2rem;font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;line-height:1.6}.container{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);background:#fffffffa;border-radius:20px;max-width:1200px;margin:0 auto;padding:3rem;box-shadow:0 20px 60px #0000004d,0 0 0 1px #ffffff1a}h1{color:#1a202c;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);-webkit-text-fill-color:transparent;letter-spacing:-.5px;-webkit-background-clip:text;background-clip:text;margin-bottom:2rem;font-size:2.5rem;font-weight:800}.controls{background:linear-gradient(135deg,#f6f8fb 0%,#fff 100%);border:1px solid #667eea1a;border-radius:16px;margin-bottom:2rem;padding:2rem;box-shadow:0 4px 6px #0000000d}.control-group{margin-bottom:1.5rem}.control-group:last-child{margin-bottom:0}label{color:#2d3748;letter-spacing:.3px;margin-bottom:.75rem;font-size:.95rem;font-weight:600;display:block}input[type=text]{color:#2d3748;background:#fff;border:2px solid #e2e8f0;border-radius:12px;width:100%;padding:1rem 1.25rem;font-family:inherit;font-size:1rem;transition:all .3s}input[type=text]:focus{border-color:#667eea;outline:none;transform:translateY(-1px);box-shadow:0 0 0 3px #667eea1a}input[type=text]::placeholder{color:#a0aec0}.checkbox-group{gap:2rem;margin-top:1rem;display:flex}.checkbox-group label{cursor:pointer;background:#fff;border:2px solid #e2e8f0;border-radius:10px;align-items:center;gap:.75rem;margin:0;padding:.75rem 1.25rem;font-weight:500;transition:all .2s;display:flex}.checkbox-group label:hover{background:#667eea0d;border-color:#667eea}input[type=checkbox]{cursor:pointer;accent-color:#667eea;width:20px;height:20px}.stats{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem;display:grid}.stat{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:16px;flex-direction:column;padding:1.75rem;transition:transform .2s,box-shadow .2s;display:flex;box-shadow:0 10px 25px #667eea4d}.stat:hover{transform:translateY(-4px);box-shadow:0 15px 35px #667eea66}.stat-label{color:#ffffffe6;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem;font-size:.85rem;font-weight:600}.stat-value{color:#fff;font-size:2.5rem;font-weight:800;line-height:1}.content{background:#fff;border:2px solid #e2e8f0;border-radius:16px;min-height:300px;padding:2.5rem;box-shadow:0 4px 6px #0000000d}.content h2{color:#1a202c;letter-spacing:-.3px;margin:2.5rem 0 1.25rem;font-size:1.75rem;font-weight:700}.content h2:first-child{margin-top:0}.content p{color:#4a5568;margin-bottom:1.25rem;font-size:1.05rem;line-height:1.8}.content code{color:#667eea;background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);border:1px solid #e2e8f0;border-radius:6px;padding:.3rem .6rem;font-family:Monaco,Courier New,monospace;font-size:.9em;font-weight:500}.button-group{flex-wrap:wrap;gap:1rem;margin-top:1.5rem;display:flex}button{cursor:pointer;letter-spacing:.3px;border:none;border-radius:12px;padding:1rem 2rem;font-family:inherit;font-size:1rem;font-weight:600;transition:all .2s}button.primary{color:#fff;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);box-shadow:0 4px 15px #667eea66}button.primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px #667eea80}button.primary:active{transform:translateY(0)}button.secondary{color:#4a5568;background:#fff;border:2px solid #e2e8f0}button.secondary:hover{background:#f7fafc;border-color:#cbd5e0;transform:translateY(-2px)}button.secondary:active{transform:translateY(0)}.warning{color:#92400e;background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border:2px solid #fbbf24;border-radius:12px;margin-bottom:1.5rem;padding:1.25rem 1.5rem;font-weight:500;box-shadow:0 4px 6px #fbbf241a}.compare-section{border-top:2px solid #e2e8f0;margin-top:3rem;padding-top:2.5rem}.compare-section h2.compare-title{color:#1a202c;margin-top:0;margin-bottom:1.5rem;font-size:1.85rem}.compare-legend-box{color:#374151;background:linear-gradient(135deg,#f6f8fb 0%,#fff 100%);border:1px solid #e2e8f0;border-radius:12px;margin-bottom:1.5rem;padding:1.25rem 1.5rem;font-size:.95rem}.legend-row{flex-wrap:wrap;align-items:center;gap:1.25rem 2rem;display:flex}.legend-item{align-items:center;gap:.5rem;font-weight:500;display:flex}.swatch{border:1px solid #00000014;border-radius:4px;flex-shrink:0;width:18px;height:18px}.legend-base{background-color:#fecaca}.legend-compare{background-color:#bbf7d0}.compare-grid{grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem;display:grid}.compare-panel>label{margin-bottom:.5rem}.compare-editable{cursor:text;white-space:pre-wrap;overflow-wrap:anywhere;min-height:200px}.compare-editable:focus{border-color:#667eea;outline:none;box-shadow:0 0 0 3px #667eea1a}@media (width<=768px){body{padding:1rem}.container{border-radius:16px;padding:1.5rem}h1{font-size:2rem}.controls{padding:1.5rem}.checkbox-group{flex-direction:column;gap:1rem}.stats{grid-template-columns:1fr}.content{padding:1.5rem}.compare-grid{grid-template-columns:1fr}}</style>
+  <!-- Highlight.css is imported via main.js -->
+  <script type="module" crossorigin src="./assets/index-BOTJryeU.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-ajqH-V5x.css">
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <a href="https://github.com/yairEO/react-css-highlight">
+        Vanilla JS Highlight Demo
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#333" style="display: inline-block; margin-left: 10px; vertical-align: middle;">
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+        </svg>
+      </a>
+    </h1>
+
+    <div id="browser-check"></div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label for="searchInput">Search Terms (comma-separated):</label>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="e.g., React, JavaScript, CSS"
+          value="high, css"
+        >
+      </div>
+
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" id="caseSensitive">
+          Case Sensitive
+        </label>
+        <label>
+          <input type="checkbox" id="wholeWord">
+          Whole Word
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button class="primary" id="updateBtn">Update Highlights</button>
+        <button class="secondary" id="clearBtn">Clear</button>
+        <button class="secondary" id="destroyBtn">Destroy</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">Matches Found</span>
+        <span class="stat-value" id="matchCount">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Search Terms</span>
+        <span class="stat-value" id="termCount">0</span>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+      <h2>CSS Custom Highlight API</h2>
+      <p>
+        This library leverages the modern CSS Custom Highlight API to provide non-invasive text highlighting
+        capabilities. Unlike traditional approaches that wrap text in HTML elements like <code>&lt;mark&gt;</code>
+        or <code>&lt;span&gt;</code>, the CSS Custom Highlight API allows you to style arbitrary text ranges
+        without mutating the DOM structure. This means your original HTML remains untouched, making it perfect
+        for highlighting search results, annotations, or any dynamic text selection without interfering with
+        your existing markup or event handlers. The API uses the <code>::highlight()</code> pseudo-element
+        combined with JavaScript Range objects to create highlights that are rendered by the browser's
+        compositing engine, resulting in excellent performance even with thousands of highlights.
+      </p>
+
+      <h2>Framework-Agnostic Design</h2>
+      <p>
+        One of the key strengths of this library is its framework-agnostic architecture. The core highlighting
+        logic is written in pure TypeScript and uses only standard browser APIs like TreeWalker, Range, and
+        CSS.highlights. This means you can use it with any JavaScript framework—Vue, Svelte, Angular, or even
+        plain vanilla JavaScript—without any framework-specific dependencies. The vanilla JavaScript API
+        provides a simple, imperative interface through the <code>createHighlight()</code> function, which
+        returns a controller object for managing highlights. This design philosophy ensures that the library
+        remains lightweight, performant, and easy to integrate into any project, regardless of your technology
+        stack. Whether you're building a complex single-page application or a simple static website, this
+        library fits seamlessly into your workflow.
+      </p>
+
+      <h2>Performance and Efficiency</h2>
+      <p>
+        Performance is a critical consideration when implementing text highlighting, especially when dealing
+        with large documents or frequent updates. This library addresses these challenges through several
+        optimizations. The TreeWalker API is used for efficient DOM traversal, allowing the library to process
+        only text nodes while automatically skipping script tags, style elements, and other non-content nodes.
+        Regex patterns are pre-compiled once per search term, avoiding repeated compilation overhead. The
+        library also implements configurable limits on the maximum number of highlights to prevent performance
+        degradation, and includes built-in debouncing support for scenarios where search terms change
+        frequently, such as real-time search interfaces. These optimizations ensure that highlighting remains
+        fast and responsive even when processing thousands of matches across complex document structures, making
+        it suitable for use in production applications where performance matters.
+      </p>
+    </div>
+
+    <section class="compare-section">
+      <h2 class="compare-title">String Comparison</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Diff Characters</span>
+          <span class="stat-value" id="compareDiffCount">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Base Characters</span>
+          <span class="stat-value" id="compareBaseLen">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Compare Characters</span>
+          <span class="stat-value" id="compareModifiedLen">0</span>
+        </div>
+      </div>
+
+      <div class="compare-legend-box">
+        <div class="legend-row">
+          <span class="legend-item">
+            <span class="swatch legend-base"></span>
+            Pink: differences in base (reference)
+          </span>
+          <span class="legend-item">
+            <span class="swatch legend-compare"></span>
+            Green: differences in compare (modified)
+          </span>
+        </div>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-panel">
+          <label>Base (reference)</label>
+          <div
+            class="content compare-editable"
+            id="compareBase"
+            contenteditable="true"
+            spellcheck="false"
+          >The CSS Custom Highlight API provides a modern way to highlight text in web pages. It uses Range objects and the CSS highlights registry to apply styles without modifying the DOM structure. This approach is fast, efficient, and non-invasive.</div>
+        </div>
+        <div class="compare-panel">
+          <label>Compare (modified)</label>
+          <div
+            class="content compare-editable"
+            id="compareModified"
+            contenteditable="true"
+            spellcheck="false"
+          >The CSS Custom Highlight API offers a modern way to highlight text in web applications. It uses Range objects and the CSS highlights registry to apply visual styles without modifying the DOM. This approach is fast and non-invasive.</div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="secondary" type="button" id="compareResetBtn">Reset</button>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>
+
