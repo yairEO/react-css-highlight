@@ -84,5 +84,15 @@
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "vitest": "4.1.11"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "7.3.6",
+      "rollup": "4.63.5",
+      "@babel/core": "7.29.7",
+      "browserslist": "4.29.1",
+      "picomatch@^4.0.3": "4.0.7",
+      "brace-expansion@^5.0.5": "5.0.12"
+    }
   }
 }
