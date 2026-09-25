@@ -36,6 +36,8 @@ export function useHighlight({
     onError?.(err);
   });
 
+  // Controller is created once per target. Option changes are applied by update() below.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: option changes go through update()
   useEffect(() => {
     if (!isSupported) {
       const err = new Error("CSS Custom Highlight API is not supported");
@@ -95,6 +97,7 @@ export function useHighlight({
     wholeWord,
     maxHighlights,
     ignoredTags,
+    onPaint,
   ]);
 
   const refresh = useCallback((searchArg?: string | string[]) => {
