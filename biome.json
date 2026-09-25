@@ -32,7 +32,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "nursery": {
         "noFloatingPromises": "warn"
       },
@@ -73,6 +73,7 @@
           }
         },
         "useExhaustiveDependencies": {
+          "level": "error",
           "options": {
             "hooks": [{ "name": "useState", "stableResult": [1] }]
           }
