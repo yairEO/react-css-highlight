@@ -24,10 +24,11 @@ jobs:
             - name: Set up pnpm
               uses: pnpm/action-setup@v6
 
+            # Node 24 ships npm >= 11.5.1, which can publish with GitHub OIDC.
             - name: Set up Node.js
               uses: actions/setup-node@v7
               with:
-                  node-version: "22"
+                  node-version: "24"
                   cache: pnpm
                   registry-url: https://registry.npmjs.org
 
@@ -69,7 +70,8 @@ jobs:
                   fi
 
                   if [ "$ON_NPM" = 0 ]; then
-                    pnpm publish --no-git-checks --provenance
+                    # Trusted publishing. Provenance is automatic. No NPM_TOKEN.
+                    npm publish
                   fi
 
                   if [ "$ON_GH" = 0 ]; then
